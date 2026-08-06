@@ -28,7 +28,7 @@ Genesis Issue
 → 장 단위 Issue와 PR
 ```
 
-1. 통합 Issue 템플릿으로 `[DISCOVERY] 프로젝트 Genesis`를 만듭니다.
+1. 방향 탐색 템플릿으로 `[DISCOVERY] 프로젝트 Genesis`를 만듭니다.
 2. 두 팀원이 각자의 AI로 대상 독자, 학습 결과, 범위와 위험을 독립적으로 제안합니다.
 3. 서로의 제안을 개선하기 전에 반례, 누락과 검증할 가정을 찾습니다.
 4. 합의한 내용만 `docs/PROJECT_FOUNDATION.md`에 반영하는 첫 PR을 만듭니다.
@@ -37,7 +37,12 @@ Genesis Issue
 
 ## GitHub 템플릿
 
-- [통합 Issue 템플릿](.github/ISSUE_TEMPLATE/project-work.md) — 탐색, 결정, Spike, 구현, 검증과 오류에 공통 사용
+- [방향 탐색](.github/ISSUE_TEMPLATE/discovery.md) — 대상 독자, 문제와 가능한 방향
+- [설계 결정](.github/ISSUE_TEMPLATE/decision.md) — 선택지 비교와 팀 기준 확정
+- [기술 Spike](.github/ISSUE_TEMPLATE/spike.md) — 불확실한 기술의 최소 실험
+- [튜토리얼 작업](.github/ISSUE_TEMPLATE/tutorial.md) — 앱 코드와 DocC 제작
+- [검증 기록](.github/ISSUE_TEMPLATE/verify.md) — API, 빌드, 실기기와 배포 확인
+- [오류 수정](.github/ISSUE_TEMPLATE/fix.md) — 재현 가능한 문제 해결
 - [Pull Request 템플릿](.github/pull_request_template.md) — 작업 결과, 주요 코드, 화면, AI 활용과 검증 기록
 
 Issue 제목의 태그는 다음 중 하나를 사용합니다.

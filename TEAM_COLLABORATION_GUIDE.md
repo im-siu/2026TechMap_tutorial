@@ -65,7 +65,7 @@ AI 답변은 유용한 제안이지만 사실의 근거도, 팀의 결정도 아
 
 ### 4.0 아무것도 정해지지 않은 경우
 
-구현 Issue를 바로 만들지 않고 통합 템플릿으로 `[DISCOVERY] 프로젝트 Genesis`를 엽니다.
+구현 Issue를 바로 만들지 않고 방향 탐색 템플릿으로 `[DISCOVERY] 프로젝트 Genesis`를 엽니다.
 
 ```text
 Genesis Issue
@@ -83,7 +83,7 @@ Genesis Issue
 
 오탈자 한두 개를 제외한 모든 작업은 Issue에서 시작합니다.
 
-모든 Issue는 `.github/ISSUE_TEMPLATE/project-work.md` 통합 양식을 사용하고 제목에 유형을 표시합니다.
+Issue 목적에 맞는 Markdown 템플릿을 선택합니다. 모든 템플릿은 `.github/ISSUE_TEMPLATE`에 있으며 제목 태그가 자동으로 입력됩니다.
 
 | 태그 | 사용 시점 |
 | --- | --- |
@@ -93,6 +93,8 @@ Genesis Issue
 | `[TUTORIAL]` | 앱 코드, DocC 장과 공간 효과 제작 |
 | `[VERIFY]` | 컴파일, 문서, Simulator, 실기기와 배포 확인 |
 | `[FIX]` | 재현 가능한 오류 또는 코드·문서 불일치 수정 |
+
+하나의 Issue가 두 템플릿에 모두 해당한다면 현재 얻어야 할 결과를 기준으로 고릅니다. 예를 들어 기술 가능성을 확인하는 동안 발견한 오류는 먼저 `[SPIKE]` 결과에 기록하고, 본 구현을 고치는 별도 `[FIX]` Issue로 분리합니다.
 
 Issue는 AI에게 그대로 전달할 작업 명세입니다. 목표, 하지 않을 일, 공식 근거, 완료 조건이 없으면 구현을 시작하지 않습니다.
 
