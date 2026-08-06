@@ -1,0 +1,70 @@
+name: "설계 결정"
+description: "두 가지 이상의 선택지를 비교하고 팀의 기술·콘텐츠 방향을 결정합니다."
+title: "[Decision] "
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: 결정할 질문
+      placeholder: "예: Hand Pose 판정에 절대 거리와 손 크기 정규화 중 어느 방식을 사용할 것인가?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 배경과 제약
+      description: 왜 지금 결정해야 하는지, 독자 수준·일정·기기·SDK 같은 제약을 적어 주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: options
+    attributes:
+      label: 선택지와 장단점
+      placeholder: |
+        ## 선택지 A
+        - 장점:
+        - 단점:
+
+        ## 선택지 B
+        - 장점:
+        - 단점:
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 판단 근거
+      description: 프로토타입 결과, 공식 문서, 실기기 테스트, 관련 Issue/PR을 연결해 주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 현재 제안
+      description: 아직 합의가 아니라는 전제로 선호하는 선택지와 이유를 적어 주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: consequences
+    attributes:
+      label: 결정 후 영향
+      description: 수정해야 할 코드·DocC·테스트·배포 및 되돌리기 어려운 부분을 적어 주세요.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: close_requirements
+    attributes:
+      label: Issue를 닫기 전 확인
+      options:
+        - label: 두 팀원이 최종 선택에 동의했습니다.
+          required: true
+        - label: 합의 결과를 관련 PR 또는 버전 관리되는 문서에 반영했습니다.
+          required: true
+        - label: 폐기한 선택지와 이유도 기록했습니다.
+          required: true
