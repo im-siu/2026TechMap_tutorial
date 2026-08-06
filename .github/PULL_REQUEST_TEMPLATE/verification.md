@@ -57,7 +57,7 @@ VERIFY, CHORE, CI와 배포 결과를 공유하는 PR입니다.
 - [ ] 추가 작업 없음
 - [ ] `[FIX]` Issue 필요
 - [ ] `[DECISION]` 재검토 필요
-- [ ] Wiki `Project Foundation` 갱신 필요
+- [ ] `docs/PROJECT_FOUNDATION.md` 갱신 필요
 
 
 ## 🔗 연결된 Issue와 근거

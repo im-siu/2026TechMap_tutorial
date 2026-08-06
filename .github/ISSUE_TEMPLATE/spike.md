@@ -62,7 +62,7 @@ assignees: ''
 - [ ] 다른 방식으로 다시 Spike
 - [ ] 현재 범위에서 제외
 - 후속 Issue:
-- Wiki `Project Foundation`에 반영할 내용:
+- `docs/PROJECT_FOUNDATION.md`에 반영할 내용:
 
 
 ## 📚 참고자료

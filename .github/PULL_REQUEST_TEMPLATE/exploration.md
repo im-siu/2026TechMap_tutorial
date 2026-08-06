@@ -50,7 +50,7 @@ DISCOVERY, DECISION, SPIKE 결과를 공유하는 PR입니다.
 ## 👀 리뷰 요청
 
 - 확인할 판단과 근거:
-- Wiki `Project Foundation` 반영 내용:
+- `docs/PROJECT_FOUNDATION.md` 반영 내용:
 - 후속 `[SPIKE]`·`[TUTORIAL]` Issue:
 
 

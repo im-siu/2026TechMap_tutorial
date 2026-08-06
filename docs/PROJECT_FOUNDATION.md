@@ -1,0 +1,144 @@
+# 프로젝트 기초 문서
+
+> 상태: 초안 — 두 팀원이 Genesis Issue와 기술 Spike를 통해 함께 채운다.
+
+이 문서는 프로젝트의 현재 방향과 확인된 사실을 AI 대화 밖에 보존하는 단일 기준 문서다. 탐색 중인 생각은 Issue 댓글에 남기고, 두 사람이 합의했거나 실험으로 확인한 내용만 이 문서에 병합한다.
+
+## 1. 프로젝트 한 문장
+
+SwiftUI, RealityKit, ARKit을 이용해 Apple Vision Pro에서 양손 Hand Pose를 인식하고 공간 술법 효과를 구현하는 기초 DocC 튜토리얼을 제작해 GitHub Pages로 배포한다.
+
+## 2. 프로젝트 원칙
+
+아래 항목은 초기 제안이다. Genesis Issue에서 수정한 뒤 체크한다.
+
+- [ ] 대상 독자가 그대로 따라 할 수 있는 재현성을 화려한 효과보다 우선한다.
+- [ ] 손 관절을 시각화하고 좌표 변환을 이해한 뒤 포즈 판정으로 넘어간다.
+- [ ] Hand Pose는 우선 관절 거리와 방향을 이용한 규칙 기반 방식으로 설명한다.
+- [ ] Apple과 GitHub의 공식 문서를 기술적 주장의 1차 근거로 사용한다.
+- [ ] 빌드, Simulator, Apple Vision Pro 실기기 검증을 구분한다.
+- [ ] 코드와 DocC 코드 리스팅을 함께 관리한다.
+- [ ] AI는 초안과 반론을 만들고, 사람은 근거를 검토해 결정한다.
+
+## 3. 대상 독자
+
+### 현재 가설
+
+- SwiftUI의 기본 문법과 Xcode 프로젝트 생성 경험이 있다.
+- RealityKit과 ARKit Hand Tracking은 처음 접한다.
+- Apple Vision Pro 실기기를 항상 사용할 수 있다고 가정하지 않는다.
+
+### 결정할 질문
+
+- Swift 동시성을 어느 수준까지 설명할 것인가?
+- Reality Composer Pro 경험을 요구할 것인가?
+- 최종 독자는 개인 학습자, 아카데미 동료, 외부 개발자 중 누구인가?
+
+## 4. 학습 완료 결과
+
+학습자는 다음 흐름을 설명하고 최소 예제를 직접 수정할 수 있어야 한다.
+
+```text
+ImmersiveSpace 열기
+→ 손 추적 권한과 세션 시작
+→ 양손 HandAnchor 수집
+→ 관절의 월드 좌표 계산
+→ 한 손 특징과 양손 관계 판정
+→ 포즈 흔들림 보정
+→ RealityKit 공간 효과 제어
+→ DocC 빌드와 GitHub Pages 배포
+```
+
+## 5. 잠정 학습 여정
+
+아래 순서는 기술 Spike 후 확정한다.
+
+1. 프로젝트와 ImmersiveSpace 준비
+2. 손 추적 권한과 `HandTrackingProvider`
+3. 왼손과 오른손 Anchor 수집
+4. 26개 관절 시각화와 월드 좌표 변환
+5. 펼친 손, 주먹, 핀치 특징 추출
+6. 양손 거리와 손바닥 방향 판정
+7. 유지 시간, smoothing과 히스테리시스
+8. 에너지 구체, 번개 또는 방어막 효과
+9. 준비, 충전, 발동과 cooldown 상태 머신
+10. Simulator와 Apple Vision Pro 테스트
+11. DocC 빌드와 GitHub Pages 배포
+
+## 6. 기술 기준
+
+### 확인된 기술 구성
+
+- SwiftUI
+- RealityKit
+- ARKit for visionOS
+- DocC
+- GitHub Actions와 GitHub Pages
+
+### 아직 확정하지 않은 버전
+
+| 항목 | 합의 버전 | 확인 환경·날짜 |
+| --- | --- | --- |
+| Xcode | 미정 | |
+| Swift | 미정 | |
+| visionOS Deployment Target | 미정 | |
+| Apple Vision Pro | 미정 | |
+| GitHub Actions runner | 미정 | |
+
+버전을 확정하기 전에 팀원의 개발 환경, 실기기 OS와 GitHub runner 지원 여부를 확인한다.
+
+## 7. 먼저 수행할 기술 Spike
+
+### Spike A — Hand Tracking
+
+- 질문: 양손 Anchor와 필요한 관절을 현재 SDK와 실기기에서 안정적으로 받을 수 있는가?
+- 최소 결과: 왼손과 오른손 관절을 서로 다른 색의 구체로 표시한다.
+- 성공 기준: 추적 시작·손실·복구가 관찰 가능하다.
+- 결과: 미실행
+
+### Spike B — Pose Classification
+
+- 질문: 절대 거리 또는 손 크기 정규화로 펼친 손, 주먹과 핀치를 구분할 수 있는가?
+- 최소 결과: 시각 효과 없이 현재 포즈 이름과 측정값을 표시한다.
+- 성공 기준: 여러 손 방향에서 오인식 원인을 설명할 수 있다.
+- 결과: 미실행
+
+### Spike C — DocC Pages
+
+- 질문: visionOS 앱의 DocC Archive를 저장소 하위 경로의 GitHub Pages에 배포할 수 있는가?
+- 최소 결과: 한 장의 DocC Tutorial과 코드 리스팅이 정적 사이트에서 열린다.
+- 성공 기준: 루트, 하위 URL, 이미지, CSS와 새로고침을 확인한다.
+- 결과: 미실행
+
+## 8. 현재 미결정 사항
+
+- 튜토리얼 전체 분량과 장 개수
+- 사용할 술법의 이름, 손 모양과 효과
+- 정적인 포즈만 다룰지 시간 순서가 있는 동적 술법까지 다룰지
+- 포즈 임계값의 시작값과 정규화 방식
+- Reality Composer Pro와 Shader Graph를 필수 또는 확장 과정으로 둘지
+- Apple Vision Pro 실기기 테스트 담당과 일정
+- 지원 Xcode와 visionOS 버전
+- GitHub Pages 저장소 이름과 최종 URL
+
+## 9. 결정 기록
+
+중요한 결정은 아래 표에 Issue와 PR을 연결한다.
+
+| 날짜 | 결정 | 근거 Issue | 반영 PR |
+| --- | --- | --- | --- |
+| | | | |
+
+## 10. 검증 기록
+
+| 날짜 | 대상 | 환경 | 결과 | 관련 Issue·PR |
+| --- | --- | --- | --- | --- |
+| | | | | |
+
+## 11. 변경 규칙
+
+- 탐색 아이디어를 바로 이 문서의 확정 사실로 쓰지 않는다.
+- 중요한 변경은 `[DECISION]` Issue에서 선택지와 근거를 비교한다.
+- Spike 결과는 성공과 실패를 모두 기록한다.
+- 이 문서를 바꾸는 PR은 어떤 결정 또는 검증이 근거인지 연결한다.
+- AI는 이 문서를 읽고 작업하되, 미정 항목을 임의로 확정하지 않는다.

@@ -50,7 +50,7 @@ assignees: ''
 ## 👥 합의 확인
 
 - [ ] 두 팀원이 선택과 결과에 동의했다.
-- [ ] Wiki `Project Foundation` 반영 여부를 정했다.
+- [ ] `docs/PROJECT_FOUNDATION.md` 반영 여부를 정했다.
 - [ ] 구현 또는 문서화 Issue를 연결했다.
 
 

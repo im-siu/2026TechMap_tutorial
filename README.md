@@ -6,9 +6,9 @@ SwiftUI, RealityKit, ARKit으로 Apple Vision Pro의 양손 Hand Pose를 인식�
 
 ## 협업 기준
 
-- 사람은 [GitHub Wiki](https://github.com/im-siu/2026TechMap_tutorial/wiki)를 먼저 읽습니다.
-- AI는 [`AGENTS.md`](AGENTS.md), Wiki의 [Project Foundation](https://github.com/im-siu/2026TechMap_tutorial/wiki/Project-Foundation), 연결된 Issue를 읽습니다.
-- 팀 그라운드 룰, AI-native 협업 방식, Git 컨벤션과 프로젝트 기초는 Wiki를 단일 기준으로 관리합니다.
+- 사람은 [GitHub Wiki](https://github.com/im-siu/2026TechMap_tutorial/wiki)에서 팀 운영 방식과 탐색 기록을 먼저 읽습니다.
+- 프로젝트의 공식 기준은 PR 리뷰가 가능한 [`docs/PROJECT_FOUNDATION.md`](docs/PROJECT_FOUNDATION.md)에서 관리합니다.
+- AI는 [`AGENTS.md`](AGENTS.md), 프로젝트 기초 문서와 연결된 Issue를 읽습니다.
 
 ## GitHub 템플릿
 
