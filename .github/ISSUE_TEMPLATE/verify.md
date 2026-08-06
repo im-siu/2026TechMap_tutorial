@@ -1,8 +1,8 @@
 ---
-name: 검증 기록
+name: 🔎 VERIFY
 about: API, 컴파일, DocC, Simulator, 실기기 또는 GitHub Pages를 확인합니다.
 title: "[VERIFY] "
-labels: ''
+labels: 'docs'
 assignees: ''
 ---
 

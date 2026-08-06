@@ -1,8 +1,8 @@
 ---
-name: 설계 결정
+name: 🤔 DECISION
 about: 둘 이상의 선택지를 근거와 함께 비교하고 팀의 기준을 확정합니다.
 title: "[DECISION] "
-labels: ''
+labels: 'docs'
 assignees: ''
 ---
 

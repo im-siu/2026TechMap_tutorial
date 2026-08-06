@@ -1,8 +1,8 @@
 ---
-name: 기술 Spike
+name: 🕵️‍♀️ SPIKE
 about: 불확실한 API, 기기 동작 또는 배포 가능성을 최소 실험으로 확인합니다.
 title: "[SPIKE] "
-labels: ''
+labels: 'docs'
 assignees: ''
 ---
 
