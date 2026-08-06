@@ -20,6 +20,7 @@ SwiftUI, RealityKit, ARKit을 이용해 Apple Vision Pro에서 양손 Hand Pose�
 | --- | --- | --- |
 | `TEAM_COLLABORATION_GUIDE.md` | 사람 | 협업 순서와 Git 컨벤션의 기준 |
 | `AGENTS.md` | AI와 사람 | AI가 작업할 때 지켜야 할 범위와 검증 규칙 |
+| `docs/PROJECT_FOUNDATION.md` | 사람과 AI | 합의된 프로젝트 원칙, 학습 여정, 기술 기준과 미결정 사항 |
 | `README.md` | 모든 방문자 | 프로젝트 소개와 시작점 |
 | GitHub Issue | 담당자, 리뷰어, AI | 아직 끝나지 않은 작업의 명세와 토론 |
 | Pull Request | 담당자와 리뷰어 | 실제 변경, 검증 결과와 병합 판단 |
@@ -35,7 +36,14 @@ AI 답변은 유용한 제안이지만 사실의 근거도, 팀의 결정도 아
 
 ## 3. 역할과 책임
 
-각 Issue에는 한 명의 **작성자**와 한 명의 **리뷰어**를 정합니다.
+방향이 정해지지 않은 탐색 단계에서는 **Explorer**와 **Challenger**, 구현 단계에서는 **작성자**와 **리뷰어**를 정합니다.
+
+### Explorer와 Challenger
+
+- Explorer는 공식 자료와 가능한 방향을 넓게 조사하고 여러 선택지를 제안한다.
+- Challenger는 제안을 바로 개선하지 않고 반례, 누락, 검증되지 않은 가정과 과도한 범위를 찾는다.
+- 두 사람은 각자의 AI로 먼저 독립적으로 탐색한 뒤 결과를 Issue 댓글에서 비교한다.
+- 두 AI가 같은 답을 했다는 이유만으로 채택하지 않고, 공식 근거나 작은 Spike로 확인한다.
 
 ### 작성자
 
@@ -55,13 +63,36 @@ AI 답변은 유용한 제안이지만 사실의 근거도, 팀의 결정도 아
 
 ## 4. 표준 작업 흐름
 
+### 4.0 아무것도 정해지지 않은 경우
+
+구현 Issue를 바로 만들지 않고 통합 템플릿으로 `[DISCOVERY] 프로젝트 Genesis`를 엽니다.
+
+```text
+Genesis Issue
+→ 독립적인 AI 탐색
+→ Explorer와 Challenger의 상호 검토
+→ 선택지를 [DECISION] Issue에서 합의
+→ docs/PROJECT_FOUNDATION.md 반영 PR
+→ 불확실한 기술을 [SPIKE]로 검증
+→ 장 단위 [TUTORIAL] Issue
+```
+
+초기 탐색에서 기술 스택과 파일 구조부터 고정하지 않습니다. 먼저 대상 독자, 학습 완료 결과, 반드시 포함할 개념, 제외할 범위와 성공 증거를 합의합니다. 합의된 내용만 `docs/PROJECT_FOUNDATION.md`에 옮기며, Issue와 AI 대화에만 있는 내용은 프로젝트의 확정 기준으로 취급하지 않습니다.
+
 ### 4.1 Issue를 먼저 만든다
 
 오탈자 한두 개를 제외한 모든 작업은 Issue에서 시작합니다.
 
-- 새로운 장이나 기능: `튜토리얼 작업`
-- 오류 재현과 환경별 확인: `검증 및 오류 보고`
-- 두 가지 이상의 방향을 비교해야 할 때: `설계 결정`
+모든 Issue는 `.github/ISSUE_TEMPLATE/project-work.md` 통합 양식을 사용하고 제목에 유형을 표시합니다.
+
+| 태그 | 사용 시점 |
+| --- | --- |
+| `[DISCOVERY]` | 대상 독자, 문제, 학습 흐름과 가능한 방향 탐색 |
+| `[DECISION]` | 둘 이상의 선택지를 비교하고 팀 기준 확정 |
+| `[SPIKE]` | 불확실한 API, 기기 동작 또는 배포의 최소 기술 실험 |
+| `[TUTORIAL]` | 앱 코드, DocC 장과 공간 효과 제작 |
+| `[VERIFY]` | 컴파일, 문서, Simulator, 실기기와 배포 확인 |
+| `[FIX]` | 재현 가능한 오류 또는 코드·문서 불일치 수정 |
 
 Issue는 AI에게 그대로 전달할 작업 명세입니다. 목표, 하지 않을 일, 공식 근거, 완료 조건이 없으면 구현을 시작하지 않습니다.
 
@@ -74,6 +105,8 @@ Issue는 AI에게 그대로 전달할 작업 명세입니다. 목표, 하지 않
 브랜치 이름은 영문 소문자와 하이픈을 사용합니다.
 
 ```text
+discovery/1-project-genesis
+spike/7-hand-tracking
 docs/12-visualize-hand-joints
 feat/18-hand-pose-classifier
 fix/24-docc-base-path
@@ -84,6 +117,8 @@ ci/31-deploy-github-pages
 
 | 접두사 | 용도 |
 | --- | --- |
+| `discovery/` | 프로젝트 탐색과 기초 문서 |
+| `spike/` | 버려도 되는 최소 기술 검증 |
 | `feat/` | 앱 또는 튜토리얼의 새 기능 |
 | `docs/` | DocC와 설명 중심 변경 |
 | `fix/` | 오류 수정 |
@@ -96,7 +131,7 @@ ci/31-deploy-github-pages
 AI에게 작업을 요청할 때 최소한 다음과 같이 지시합니다.
 
 ```text
-저장소의 AGENTS.md와 Issue #12를 먼저 읽어.
+저장소의 AGENTS.md, docs/PROJECT_FOUNDATION.md와 Issue #12를 먼저 읽어.
 Issue 범위 밖의 변경은 하지 말고, 기존 변경을 보존해.
 사용한 Apple API는 공식 문서와 대조해.
 실기기에서 검증하지 못한 내용은 명확히 표시해.
@@ -220,7 +255,7 @@ AI에게 맡긴 뒤 사람이 반드시 확인할 항목은 다음과 같습니�
 - GitHub Pages 하위 경로와 CI 버전
 - 손 추적 임계값의 실기기 적합성
 
-AI가 서로 다른 답을 내면 다수결로 고르지 않습니다. 차이를 `설계 결정` Issue로 옮기고 공식 자료, 작은 프로토타입 또는 실기기 결과로 판단합니다.
+AI가 서로 다른 답을 내면 다수결로 고르지 않습니다. 차이를 `[DECISION]` Issue로 옮기고 공식 자료, 작은 프로토타입 또는 실기기 결과로 판단합니다.
 
 ## 9. 완료의 정의
 
@@ -248,12 +283,14 @@ AI가 서로 다른 답을 내면 다수결로 고르지 않습니다. 차이를
 
 ## 10. 첫 협업 순서
 
-1. 두 사람이 이 문서와 `AGENTS.md`를 읽고 수정할 규칙을 합의한다.
-2. `설계 결정` Issue로 튜토리얼 목차와 지원 Xcode/visionOS 버전을 확정한다.
-3. `튜토리얼 작업` Issue를 장 단위로 만든다.
-4. 첫 번째 작성자는 프로젝트와 ImmersiveSpace 골격을 담당한다.
-5. 두 번째 작성자는 공식 자료와 DocC 학습 흐름을 검증한다.
-6. 다음 Issue부터 역할을 교대한다.
-7. Apple Vision Pro 테스트가 필요한 Issue를 별도로 표시하고 한 번에 모아 검증하지 않는다.
+1. 두 사람이 이 문서, `AGENTS.md`, `docs/PROJECT_FOUNDATION.md`를 읽는다.
+2. `[DISCOVERY] 프로젝트 Genesis` Issue를 열고 각자 AI의 독립적인 제안을 댓글로 남긴다.
+3. 한 명은 Explorer, 다른 한 명은 Challenger가 되어 대상 독자, 완료 결과, 범위와 위험을 비교한다.
+4. 합의가 필요한 항목을 `[DECISION]` Issue로 분리한다.
+5. 합의 결과를 `docs/PROJECT_FOUNDATION.md`에 반영하는 첫 PR을 만든다.
+6. Hand Tracking, Pose Classification, DocC Pages를 각각 작은 `[SPIKE]`로 확인한다.
+7. Spike 결과를 기초 문서에 반영하고 튜토리얼 목차를 확정한다.
+8. `[TUTORIAL]` Issue를 장 단위로 만들고 작성자와 리뷰어 역할을 교대한다.
+9. Apple Vision Pro 테스트가 필요한 Issue를 명확히 표시하고 구현 직후 검증한다.
 
 작업 속도보다 “어떤 근거로 무엇을 확인했는지 다음 사람이 재현할 수 있는 상태”를 우선합니다.
