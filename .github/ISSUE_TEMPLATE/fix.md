@@ -1,8 +1,8 @@
 ---
-name: 오류 수정
+name: 🛠️ FIX
 about: 재현 가능한 앱, DocC 또는 배포 오류와 코드·문서 불일치를 수정합니다.
 title: "[FIX] "
-labels: ''
+labels: 'fix'
 assignees: ''
 ---
 

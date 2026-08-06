@@ -1,8 +1,8 @@
 ---
-name: 튜토리얼 작업
+name: 📖 TUTORIAL
 about: visionOS 앱 코드, DocC 장 또는 공간 효과를 제작합니다.
 title: "[TUTORIAL] "
-labels: ''
+labels: 'feat'
 assignees: ''
 ---
 

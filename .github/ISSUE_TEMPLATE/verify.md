@@ -1,8 +1,8 @@
 ---
-name: 검증 기록
+name: 🔎 VERIFY
 about: API, 컴파일, DocC, Simulator, 실기기 또는 GitHub Pages를 확인합니다.
 title: "[VERIFY] "
-labels: ''
+labels: 'docs'
 assignees: ''
 ---
 
@@ -52,7 +52,7 @@ assignees: ''
 - [ ] 추가 작업 없음
 - [ ] `[FIX]` Issue 필요
 - [ ] `[DECISION]` 재검토 필요
-- [ ] `docs/PROJECT_FOUNDATION.md` 갱신 필요
+- [ ] Wiki `Project Foundation` 갱신 필요
 - 후속 Issue:
 
 

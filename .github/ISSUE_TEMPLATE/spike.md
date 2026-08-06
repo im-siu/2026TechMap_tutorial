@@ -1,8 +1,8 @@
 ---
-name: 기술 Spike
+name: 🕵️‍♀️ SPIKE
 about: 불확실한 API, 기기 동작 또는 배포 가능성을 최소 실험으로 확인합니다.
 title: "[SPIKE] "
-labels: ''
+labels: 'docs'
 assignees: ''
 ---
 
@@ -62,7 +62,7 @@ assignees: ''
 - [ ] 다른 방식으로 다시 Spike
 - [ ] 현재 범위에서 제외
 - 후속 Issue:
-- `docs/PROJECT_FOUNDATION.md`에 반영할 내용:
+- Wiki `Project Foundation`에 반영할 내용:
 
 
 ## 📚 참고자료

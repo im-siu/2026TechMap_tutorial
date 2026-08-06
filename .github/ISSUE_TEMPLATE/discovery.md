@@ -1,8 +1,8 @@
 ---
-name: 방향 탐색
+name: 👀 DISCOVERY
 about: 대상 독자, 문제, 학습 결과와 가능한 방향을 탐색합니다.
 title: "[DISCOVERY] "
-labels: ''
+labels: 'docs'
 assignees: ''
 ---
 
@@ -65,7 +65,7 @@ assignees: ''
 - [ ] 두 사람이 독립적인 제안을 공유했다.
 - [ ] 확인된 사실과 가설을 구분했다.
 - [ ] 결정할 항목을 `[DECISION]` Issue로 분리했다.
-- [ ] 합의된 내용의 `docs/PROJECT_FOUNDATION.md` 반영 방법을 정했다.
+- [ ] 합의된 내용의 Wiki `Project Foundation` 반영 방법을 정했다.
 
 
 ## 🔗 관련 이슈

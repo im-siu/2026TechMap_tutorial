@@ -1,8 +1,8 @@
 ---
-name: 설계 결정
+name: 🤔 DECISION
 about: 둘 이상의 선택지를 근거와 함께 비교하고 팀의 기준을 확정합니다.
 title: "[DECISION] "
-labels: ''
+labels: 'docs'
 assignees: ''
 ---
 
@@ -50,7 +50,7 @@ assignees: ''
 ## 👥 합의 확인
 
 - [ ] 두 팀원이 선택과 결과에 동의했다.
-- [ ] `docs/PROJECT_FOUNDATION.md` 반영 여부를 정했다.
+- [ ] Wiki `Project Foundation` 반영 여부를 정했다.
 - [ ] 구현 또는 문서화 Issue를 연결했다.
 
 

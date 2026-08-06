@@ -1,6 +1,6 @@
 # AI 작업 지침
 
-이 파일은 이 저장소에서 작업하는 모든 AI 에이전트가 먼저 읽고 따라야 하는 공통 지침이다. 사람을 위한 전체 협업 방식은 `TEAM_COLLABORATION_GUIDE.md`에 있다.
+이 파일은 이 저장소에서 작업하는 모든 AI 에이전트가 먼저 읽고 따라야 하는 공통 지침이다. 사람을 위한 협업 방식과 프로젝트 기초는 [GitHub Wiki](https://github.com/im-siu/2026TechMap_tutorial/wiki)에 있다.
 
 ## 프로젝트 목표
 
@@ -11,8 +11,8 @@ SwiftUI, RealityKit, ARKit을 이용해 Apple Vision Pro에서 양손 Hand Pose�
 ## 작업을 시작하기 전에
 
 1. 이 파일 전체를 읽는다.
-2. `TEAM_COLLABORATION_GUIDE.md`를 읽는다.
-3. `docs/PROJECT_FOUNDATION.md`에서 확정된 내용과 미결정 사항을 구분한다.
+2. Wiki의 [Team Ground Rules](https://github.com/im-siu/2026TechMap_tutorial/wiki/Team-Ground-Rules)를 읽는다.
+3. Wiki의 [Project Foundation](https://github.com/im-siu/2026TechMap_tutorial/wiki/Project-Foundation)에서 확정된 내용과 미결정 사항을 구분한다.
 4. 사용자가 지정한 Issue와 관련 파일을 읽는다.
 5. 작업 트리의 기존 변경을 확인하고 보존한다.
 6. Issue에 목표, 범위, 제외 범위와 완료 조건이 있는지 확인한다.
@@ -34,7 +34,7 @@ Issue 제목의 태그와 본문을 보고 현재 목적을 먼저 판단한다.
 
 - 각 선택지의 장점, 비용, 되돌리기 난이도와 학습자 영향을 비교한다.
 - 기존 선호안에 맞추기보다 반례와 실패 조건을 찾는다.
-- 사람의 최종 합의 없이 `docs/PROJECT_FOUNDATION.md`의 미정 항목을 확정하지 않는다.
+- 사람의 최종 합의 없이 Wiki `Project Foundation`의 미정 항목을 확정하지 않는다.
 
 ### `[SPIKE]`
 
@@ -52,7 +52,7 @@ Issue 제목의 태그와 본문을 보고 현재 목적을 먼저 판단한다.
 
 1. 현재 저장소에서 빌드와 테스트로 확인한 결과
 2. Apple 또는 GitHub의 최신 공식 문서와 공식 샘플
-3. 기본 브랜치의 코드, DocC와 `docs/PROJECT_FOUNDATION.md`
+3. 기본 브랜치의 코드·DocC와 Wiki `Project Foundation`
 4. 연결된 Issue와 PR의 합의
 5. 블로그, 커뮤니티 글과 AI 답변
 
@@ -152,7 +152,7 @@ SpellEffectController
 ## Git과 협업 규칙
 
 - Issue 하나의 목적에 집중한다.
-- 브랜치와 커밋 규칙은 `TEAM_COLLABORATION_GUIDE.md`를 따른다.
+- 브랜치와 커밋 규칙은 Wiki의 [Issue and PR Conventions](https://github.com/im-siu/2026TechMap_tutorial/wiki/Issue-and-PR-Conventions)를 따른다.
 - 요청받지 않은 커밋, push, merge 또는 PR 생성은 하지 않는다.
 - PR 설명에는 `Closes #번호`, AI 활용 범위, 검증 결과와 미검증 항목을 남긴다.
 - 중요한 설계 선택은 코드만으로 암묵적으로 결정하지 말고 `[DECISION]` Issue의 합의를 요구한다.
