@@ -22,21 +22,24 @@ SwiftUI, RealityKit, ARKit을 이용해 Apple Vision Pro에서 양손 Hand Pose�
 
 ## 3. 대상 독자
 
-### 현재 가설
+### 합의한 가설
 
 - SwiftUI의 기본 문법과 Xcode 프로젝트 생성 경험이 있다.
-- RealityKit과 ARKit Hand Tracking은 처음 접한다.
-- Apple Vision Pro 실기기를 항상 사용할 수 있다고 가정하지 않는다.
+- Swift의 구조체, 열거형, 옵셔널과 기본 비동기 코드를 읽을 수 있다.
+- RealityKit, ARKit, 3D 좌표 변환과 Hand Tracking은 처음 접해도 된다.
+- Apple Vision Pro가 없어도 프로젝트 구조, RealityKit 기준 장면과 Pose 판정 로직 일부는 따라갈 수 있다.
+- 실제 Hand Anchor 입력, 관절 변환 확인, 임계값 조정과 최종 사용성 검증에는 Apple Vision Pro가 필요하다.
+- 머신러닝 모델 학습은 다루지 않고 관절의 거리와 방향을 이용한 규칙 기반 인식을 배운다.
 
 ### 결정할 질문
 
 - Swift 동시성을 어느 수준까지 설명할 것인가?
 - Reality Composer Pro 경험을 요구할 것인가?
-- 최종 독자는 개인 학습자, 아카데미 동료, 외부 개발자 중 누구인가?
+- 최종 독자를 개인 학습자, 아카데미 동료, 외부 개발자 중 어디에 더 가깝게 둘 것인가?
 
 ## 4. 학습 완료 결과
 
-학습자는 다음 흐름을 설명하고 최소 예제를 직접 수정할 수 있어야 한다.
+첫 버전의 학습자는 다음 흐름을 설명하고 최소 예제를 직접 수정할 수 있어야 한다.
 
 ```text
 ImmersiveSpace 열기
@@ -44,26 +47,41 @@ ImmersiveSpace 열기
 → 양손 HandAnchor 수집
 → 관절의 월드 좌표 계산
 → 한 손 특징과 양손 관계 판정
-→ 포즈 흔들림 보정
-→ RealityKit 공간 효과 제어
-→ DocC 빌드와 GitHub Pages 배포
+→ 포즈 이름과 판정 근거 표시
 ```
+
+학습자는 튜토리얼을 마치면 다음을 할 수 있어야 한다.
+
+1. SwiftUI에서 Immersive Space를 열고 RealityKit 기준 장면을 배치한다.
+2. `HandTrackingProvider`로 왼손과 오른손 Anchor를 구분하고 추적 상태를 확인한다.
+3. Hand Anchor와 Joint transform을 이용해 관절의 월드 좌표를 계산한다.
+4. 관절 좌표에서 거리, 방향과 손 크기 정규화 특징을 계산한다.
+5. 한 손 특징과 양손 관계를 조합해 Hand Pose 이름과 판정 근거를 표시한다.
 
 ## 5. 잠정 학습 여정
 
-아래 순서는 기술 Spike 후 확정한다.
+첫 버전의 본편은 양손 Hand Pose를 인식하고 판정 근거를 확인하는 데 집중한다. 오인식 보정, 술법 상태 머신과 완성된 공간 효과는 후속 확장으로 분리한다.
 
-1. 프로젝트와 ImmersiveSpace 준비
-2. 손 추적 권한과 `HandTrackingProvider`
-3. 왼손과 오른손 Anchor 수집
-4. 26개 관절 시각화와 월드 좌표 변환
-5. 펼친 손, 주먹, 핀치 특징 추출
-6. 양손 거리와 손바닥 방향 판정
-7. 유지 시간, smoothing과 히스테리시스
-8. 에너지 구체, 번개 또는 방어막 효과
-9. 준비, 충전, 발동과 cooldown 상태 머신
-10. Simulator와 Apple Vision Pro 테스트
-11. DocC 빌드와 GitHub Pages 배포
+| 장 | 학습 목표 | 결과물 | 검증 방법 |
+| --- | --- | --- | --- |
+| 1. 첫 Immersive Space | Window와 Immersive Space의 역할 이해 | 공간에 기준 구체 표시 | Simulator 실행 |
+| 2. 양손 추적 시작 | 권한, 지원 여부, `ARKitSession` 생명주기 이해 | 좌우 손 추적 상태 표시 | 빌드와 실기기 입력 |
+| 3. 관절을 공간에 그리기 | Hand Anchor와 Joint 변환 순서 이해 | 양손 관절을 서로 다른 색으로 표시 | 실기기에서 손 이동과 회전 |
+| 4. 포즈의 재료 만들기 | 거리, 방향, 손 크기 정규화 특징 이해 | 디버그 패널에 특징값 표시 | 순수 계산 테스트와 실기기 관찰 |
+| 5. 양손 Hand Pose 판정 | 한 손 특징과 양손 관계 조합 | 포즈 이름과 판정 근거 표시 | 합성 입력 테스트와 실기기 비교 |
+
+### 후속 확장 후보
+
+- 오인식 줄이기: 유지 시간, smoothing, 진입·해제 임계값
+- 술법 상태 머신: 준비, 충전, 발동, 쿨다운
+- 공간 효과 완성: 손 사이 에너지 구체, 번개, 방어막 등 RealityKit 효과
+- DocC와 GitHub Pages: `docbuild`, 링크·리소스 확인, 저장소 하위 경로 배포
+
+### 기기별 진행 가능 범위
+
+- Simulator: Immersive Space, RealityKit 기준 장면, 수동 디버그 UI
+- 순수 Swift 테스트: 특징 계산, Pose 판정 로직
+- Apple Vision Pro: 실제 Hand Anchor, 관절 변환, 임계값 조정, 추적 손실과 사용성 확인
 
 ## 6. 기술 기준
 
@@ -112,9 +130,10 @@ ImmersiveSpace 열기
 
 ## 8. 현재 미결정 사항
 
-- 튜토리얼 전체 분량과 장 개수
+- 후속 확장의 분량과 장 개수
 - 사용할 술법의 이름, 손 모양과 효과
-- 정적인 포즈만 다룰지 시간 순서가 있는 동적 술법까지 다룰지
+- 후속 확장에서 정적인 포즈만 다룰지 시간 순서가 있는 동적 술법까지 다룰지
+- 오인식 보정과 상태 머신을 어느 수준까지 필수로 다룰지
 - 포즈 임계값의 시작값과 정규화 방식
 - Reality Composer Pro와 Shader Graph를 필수 또는 확장 과정으로 둘지
 - Apple Vision Pro 실기기 테스트 담당과 일정
@@ -127,7 +146,7 @@ ImmersiveSpace 열기
 
 | 날짜 | 결정 | 근거 Issue | 반영 PR |
 | --- | --- | --- | --- |
-| | | | |
+| 2026-08-07 | 첫 버전 본편은 양손 Hand Pose 판정까지의 5장 구성으로 하고, 오인식 보정·술법 상태 머신·공간 효과 완성은 후속 확장으로 분리한다. | #1 | 이 PR |
 
 ## 10. 검증 기록
 
