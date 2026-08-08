@@ -1,4 +1,4 @@
-# Pink Swirl Fish Tutorial
+# Hand Jutsu Tutorial
 
 SwiftUI, RealityKit, ARKit으로 Apple Vision Pro의 양손 Hand Pose를 인식하고 공간 술법 효과를 만드는 DocC 기초 튜토리얼 프로젝트입니다.
 
