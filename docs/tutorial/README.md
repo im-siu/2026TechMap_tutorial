@@ -37,6 +37,18 @@ Immersive Space 열기
 | 4 | 관절을 공간에 그리기 | Hand Anchor와 Joint transform으로 관절 위치 표시 | 실기기 검증 필요 |
 | 5 | Pose Features로 이어가기 | 관절 월드 좌표를 손 모양 판정 재료로 변환 | 합성 좌표 검증, 실기기 검증 필요 |
 
+## 현재 문서 구조
+
+현재 `docs/tutorial/`의 3개 문서는 최종 튜토리얼 5장을 그대로 1:1로 나눈 본문이 아니라, 1차 튜토리얼 제작을 위한 묶음 초안이다.
+
+| 현재 문서 | 포괄하는 최종 장 |
+| --- | --- |
+| `01-hand-jutsu-overview.md` | 1장 Hand Jutsu 시작하기 |
+| `02-hand-tracking-flow.md` | 2장 첫 Immersive Space, 3장 양손 추적 시작, 4장 관절을 공간에 그리기 |
+| `03-pose-features-bridge.md` | 5장 Pose Features로 이어가기 |
+
+최종 튜토리얼 본문 작성 단계에서는 필요에 따라 `01`-`05` 구조로 분리한다.
+
 ## 후속 확장으로 분리할 내용
 
 이번 1차 튜토리얼에서는 아래 내용은 본편 완료 조건으로 다루지 않는다.
