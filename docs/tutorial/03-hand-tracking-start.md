@@ -218,6 +218,8 @@ let joints = HandJointCatalog.all.compactMap { jointName -> HandJointSample? in
 
 여기서 중요한 정책은 누락된 관절을 임의 좌표로 채우지 않는 것이다. 추적되지 않은 관절을 `(0, 0, 0)` 같은 값으로 대체하면 다음 장의 시각화와 5장의 Pose Features 계산이 실제 손 상태와 다른 값을 사용하게 된다.
 
+이것은 ARKit이 강제하는 규칙이 아니라 이 튜토리얼의 보수적인 선택이다. `joint.isTracked == false`인 관절에도 transform 값이 있을 수 있지만, 이 장에서는 추정된 좌표를 실제로 추적된 좌표처럼 다루지 않기 위해 snapshot에서 제외한다. 실제 앱에서는 제스처 특성에 따라 추정 transform을 사용할지, 잠깐 이전 값을 유지할지, 현재처럼 제외할지 다시 결정해야 한다.
+
 따라서 `joints.count`는 프레임마다 달라질 수 있다. 4장의 시각화는 snapshot에 들어 있는 관절만 그려야 하고, 5장의 Pose Features 계산은 필요한 관절이 없을 때 계산을 건너뛰거나 별도 정책을 적용해야 한다.
 
 관절 transform 계산과 공간 시각화는 4장에서 더 자세히 다룬다. 3장에서는 "추적된 관절만 다음 단계로 넘긴다"는 정책을 이해하는 데 집중한다.
