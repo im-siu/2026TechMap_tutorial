@@ -2,9 +2,7 @@
 
 > 상태: 합성 좌표·코드 수준 입력 계약 검증 완료, 앱 종단 간·실기기 미검증
 >
-> 담당: @sueheo · 교차 리뷰: @im-siu
->
-> 기준: Issue #6, #16 / PR #7 커밋 [`9d8dbae`](https://github.com/im-siu/2026TechMap_tutorial/commit/9d8dbae) / PR #8 커밋 [`d3b57bd`](https://github.com/im-siu/2026TechMap_tutorial/commit/d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f)
+> 예제 코드 기준: PR #7 / 커밋 [`9d8dbae`](https://github.com/im-siu/2026TechMap_tutorial/commit/9d8dbae), PR #8 / 커밋 [`d3b57bd`](https://github.com/im-siu/2026TechMap_tutorial/commit/d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f)
 
 [이전: 4장 관절을 공간에 그리기](./04-joint-visualization.md)
 
@@ -12,9 +10,9 @@
 
 4장에서 RealityKit 구체를 그릴 때 사용한 관절 월드 transform을 `SIMD3<Float>` 위치로 바꾸고, ARKit에 의존하지 않는 Pose Features 계산의 입력으로 전달하는 구조를 이해한다.
 
-이 장은 완성된 손 모양 분류기를 만들지 않는다. 다음 판정에 사용할 **재료**를 계산하는 데 집중한다.
+프로젝트의 최종 목표에는 Hand Pose 이름과 판정 근거 표시가 포함된다. 다만 이 장이 해설하는 PR #7의 현재 기준 코드에는 분류기와 임계값이 없으므로, 여기서는 다음 판정에 사용할 **재료**를 계산하는 데 집중한다.
 
-특징 추출과 분류는 서로 다른 책임이다. 특징 추출은 관절 좌표를 거리·각도·방향으로 바꾸고, 분류는 그 값을 임계값과 조합해 포즈 이름을 결정한다. 이 장의 범위는 Issue #16에 따라 특징 추출까지이며, 이것이 프로젝트 전체에서 분류기를 다루지 않기로 확정했다는 뜻은 아니다. 첫 버전의 최종 결과에 분류를 포함할지는 프로젝트 범위 결정과 일치시켜야 한다.
+특징 추출과 분류는 서로 다른 책임이다. 특징 추출은 관절 좌표를 거리·각도·방향으로 바꾸고, 분류는 그 값을 임계값과 조합해 포즈 이름을 결정한다. Issue #16과 이 장의 기준 코드는 특징 추출까지를 범위로 삼는다. 분류기 구현을 설명하려면 판정 규칙과 임계값을 먼저 코드로 구현하고 검증한 뒤 그 기준 코드를 연결해야 한다.
 
 - 손바닥 크기와 중심
 - 손바닥 법선
