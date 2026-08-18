@@ -70,7 +70,7 @@ macOS: 26.5.2 (25F84)
 Xcode: 26.6 (17F113)
 Swift: 6.3.3
 명령: DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcrun swift test --package-path Spikes/PoseFeatures
-결과: 8 tests, 0 failures
+결과: 12 tests, 0 failures
 ```
 
 현재 `xcode-select`가 Command Line Tools를 가리키고 있어 단순 `swift test`에서는 XCTest 모듈을 찾지 못했다. 위 명령처럼 Xcode의 Developer Directory를 지정하면 실행된다.
@@ -83,6 +83,8 @@ Swift: 6.3.3
 - 거울 자세의 좌우 손에서 일관된 손바닥 법선
 - 양손 거리·방향·마주 보기와 서로 다른 손 크기 계산
 - 잘못된 입력의 명시적 오류와 중심 일치 시 안전한 optional 결과
+- #5의 추적 snapshot 형태에서 같은 `HandSample`과 특징값 생성
+- #5와 #6의 관절 이름 일치, 추적 해제·중복·누락 관절 정책 유지
 
 ## #5 연결 체크리스트
 
@@ -96,6 +98,35 @@ Swift: 6.3.3
 - [`Joint.isTracked`](https://developer.apple.com/documentation/arkit/handskeleton/joint/istracked)는 가림 상황에서도 plausible transform을 줄 수 있으므로, 무조건 제외할지 유지할지는 실기기 관찰 후 별도로 결정한다.
 - 왼손/오른손, 손바닥 앞·뒤, 손 크기, 손가락 벌림, 가림과 추적 손실 데이터를 저장해 세 정규화 후보를 비교한다.
 - 두 HandAnchor가 다른 시점에 갱신될 수 있으므로 양손 특징에 사용할 시간 차 허용 범위는 후속 구현에서 정한다.
+
+### PR #8 코드 기준 호환성 재검증
+
+[#5 Draft PR #8](https://github.com/im-siu/2026TechMap_tutorial/pull/8)의
+`HandTrackingSnapshot`과 `HandSnapshot` 계약을 커밋
+`d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f`에서 대조했다.
+
+- #5는 `HandAnchor.chirality`를 자체 `HandSide`로 변환한다.
+- 추적 중인 관절만 `HandJointSample` 배열에 남긴다.
+- 각 표본의 `originFromJointTransform`은 이미
+  `originFromAnchorTransform * anchorFromJointTransform`으로 계산된 월드 transform이다.
+- #5의 관절 목록 27개 중 `forearmArm`, `forearmWrist`를 제외한 25개 이름이
+  이 Package의 `HandJoint`와 일치한다.
+
+이 구조를 ARKit 없이 재현하기 위해 `HandJointWorldPosition`과
+`HandSample(side:isTracked:jointWorldPositions:)` 경계를 추가했다. #5 쪽 어댑터가
+월드 transform의 translation을 `SIMD3<Float>`로 꺼내고 ARKit 관절 이름을
+`HandJoint`로 매핑한 뒤 이 생성자에 넘긴다. 추적되지 않은 손과 중복 관절은
+생성 오류가 되고, 추적되지 않아 배열에서 빠진 관절은 기존 `missingJoints` 오류로
+이어진다. 임의 위치로 보완하지 않는다.
+
+현재 정책은 완전한 `HandFeatures` 계산에 25개 관절을 모두 요구한다. PR #8이
+개별 `Joint.isTracked == false`인 관절을 제외하므로 실제 기기에서는 표본이 자주
+거부될 수 있다. 전체 관절 필수 정책을 유지할지, 술·인·축에 필요한 관절 집합으로
+나눌지는 실기기 로그를 확인한 뒤 결정한다.
+
+이번 재검증은 두 코드의 타입·관절 이름·오류 경계를 비교한 **코드 수준 검증**이다.
+PR #8도 실기기 미검증 상태이므로 실제 Joint 좌표, 손 가림과 추적 손실에서의
+동작은 아직 확인되지 않았다.
 
 ## 한계와 다음 확인
 

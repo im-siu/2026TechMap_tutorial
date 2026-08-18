@@ -6,6 +6,88 @@ import simd
 final class PoseFeaturesTests: XCTestCase {
   private let accuracy: Float = 1e-5
 
+  func testJointCatalogMatchesTrackingSnapshotContract() {
+    let expectedJointNames: Set<String> = [
+      "wrist",
+      "thumbKnuckle", "thumbIntermediateBase", "thumbIntermediateTip", "thumbTip",
+      "indexFingerMetacarpal", "indexFingerKnuckle", "indexFingerIntermediateBase",
+      "indexFingerIntermediateTip", "indexFingerTip",
+      "middleFingerMetacarpal", "middleFingerKnuckle", "middleFingerIntermediateBase",
+      "middleFingerIntermediateTip", "middleFingerTip",
+      "ringFingerMetacarpal", "ringFingerKnuckle", "ringFingerIntermediateBase",
+      "ringFingerIntermediateTip", "ringFingerTip",
+      "littleFingerMetacarpal", "littleFingerKnuckle", "littleFingerIntermediateBase",
+      "littleFingerIntermediateTip", "littleFingerTip",
+    ]
+
+    XCTAssertEqual(Set(HandJoint.allCases.map(\.rawValue)), expectedJointNames)
+    XCTAssertFalse(expectedJointNames.contains("forearmArm"))
+    XCTAssertFalse(expectedJointNames.contains("forearmWrist"))
+  }
+
+  func testTrackedSnapshotContractBuildsEquivalentHandSample() throws {
+    let originalSample = SyntheticHandSamples.open(side: .left)
+    let jointWorldPositions = originalSample.joints.map {
+      HandJointWorldPosition(joint: $0.key, position: $0.value)
+    }
+    let adaptedSample = try HandSample(
+      side: .left,
+      isTracked: true,
+      jointWorldPositions: jointWorldPositions
+    )
+
+    XCTAssertEqual(adaptedSample.side, originalSample.side)
+    XCTAssertEqual(adaptedSample.joints, originalSample.joints)
+
+    let originalFeatures = try HandFeatureExtractor.extract(from: originalSample)
+    let adaptedFeatures = try HandFeatureExtractor.extract(from: adaptedSample)
+    XCTAssertEqual(
+      adaptedFeatures.normalizedThumbIndexTipDistance,
+      originalFeatures.normalizedThumbIndexTipDistance,
+      accuracy: accuracy
+    )
+    XCTAssertEqual(adaptedFeatures.palmNormal.x, originalFeatures.palmNormal.x, accuracy: accuracy)
+    XCTAssertEqual(adaptedFeatures.palmNormal.y, originalFeatures.palmNormal.y, accuracy: accuracy)
+    XCTAssertEqual(adaptedFeatures.palmNormal.z, originalFeatures.palmNormal.z, accuracy: accuracy)
+  }
+
+  func testSnapshotContractRejectsUntrackedAndDuplicateJoints() {
+    XCTAssertThrowsError(
+      try HandSample(side: .right, isTracked: false, jointWorldPositions: [])
+    ) { error in
+      XCTAssertEqual(error as? HandSampleConstructionError, .handNotTracked(.right))
+    }
+
+    let duplicate = HandJointWorldPosition(joint: .wrist, position: .zero)
+    XCTAssertThrowsError(
+      try HandSample(
+        side: .right,
+        isTracked: true,
+        jointWorldPositions: [duplicate, duplicate]
+      )
+    ) { error in
+      XCTAssertEqual(error as? HandSampleConstructionError, .duplicateJoint(.wrist))
+    }
+  }
+
+  func testSnapshotContractPreservesMissingJointPolicy() throws {
+    let partialSample = try HandSample(
+      side: .right,
+      isTracked: true,
+      jointWorldPositions: [
+        HandJointWorldPosition(joint: .wrist, position: .zero)
+      ]
+    )
+
+    XCTAssertThrowsError(try HandFeatureExtractor.extract(from: partialSample)) { error in
+      guard case .missingJoints(let missing) = error as? FeatureExtractionError else {
+        return XCTFail("Expected missingJoints, got \(error)")
+      }
+      XCTAssertEqual(missing.count, HandJoint.allCases.count - 1)
+      XCTAssertFalse(missing.contains(.wrist))
+    }
+  }
+
   func testOpenFistAndPartialBendProduceOrderedFingerFeatures() throws {
     let open = try HandFeatureExtractor.extract(from: SyntheticHandSamples.open())
     let partial = try HandFeatureExtractor.extract(

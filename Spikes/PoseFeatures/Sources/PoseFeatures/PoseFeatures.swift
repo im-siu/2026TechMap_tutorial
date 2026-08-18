@@ -1,6 +1,6 @@
 import simd
 
-public enum HandSide: Sendable {
+public enum HandSide: Equatable, Sendable {
   case left
   case right
 }
@@ -56,6 +56,46 @@ public struct HandSample: Sendable {
     self.side = side
     self.joints = joints
   }
+
+  /// 추적 계층이 전달한 월드 좌표 배열을 특징 계산 입력으로 변환한다.
+  ///
+  /// #5의 `HandSnapshot`처럼 추적 여부와 관절 배열을 따로 제공하는 입력을
+  /// ARKit 타입 없이 연결하기 위한 경계다. 누락 관절은 이 단계에서 채우지 않고
+  /// `HandFeatureExtractor`의 `missingJoints` 오류로 보고한다.
+  public init(
+    side: HandSide,
+    isTracked: Bool,
+    jointWorldPositions: [HandJointWorldPosition]
+  ) throws {
+    guard isTracked else {
+      throw HandSampleConstructionError.handNotTracked(side)
+    }
+
+    var joints: [HandJoint: SIMD3<Float>] = [:]
+    for sample in jointWorldPositions {
+      guard joints.updateValue(sample.position, forKey: sample.joint) == nil else {
+        throw HandSampleConstructionError.duplicateJoint(sample.joint)
+      }
+    }
+
+    self.init(side: side, joints: joints)
+  }
+}
+
+/// 추적 계층과 특징 계산 계층 사이에서 사용하는 ARKit 비의존 관절 월드 좌표다.
+public struct HandJointWorldPosition: Equatable, Sendable {
+  public let joint: HandJoint
+  public let position: SIMD3<Float>
+
+  public init(joint: HandJoint, position: SIMD3<Float>) {
+    self.joint = joint
+    self.position = position
+  }
+}
+
+public enum HandSampleConstructionError: Error, Equatable, Sendable {
+  case handNotTracked(HandSide)
+  case duplicateJoint(HandJoint)
 }
 
 public enum FeatureExtractionError: Error, Equatable, Sendable {
