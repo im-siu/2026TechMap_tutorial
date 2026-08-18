@@ -61,8 +61,17 @@ Immersive Space 열기
 ## 문서 목록
 
 - [01. Hand Jutsu 시작하기](./01-hand-jutsu-overview.md)
-- [02. Hand Tracking 흐름](./02-hand-tracking-flow.md)
-- [03. Pose Features 연결 흐름](./03-pose-features-bridge.md)
+- [02. 첫 Immersive Space](./02-first-immersive-space.md)
+- 03. 양손 추적 시작: 작성 예정
+- 04. 관절을 공간에 그리기: 작성 예정
+- 05. Pose Features로 이어가기: 작성 예정
+
+## 참고용 묶음 초안
+
+아래 문서는 PR #10에서 만든 묶음 초안이다. 최종 장별 본문이 작성되면 필요한 내용을 옮기고 정리한다.
+
+- [Hand Tracking 흐름](./02-hand-tracking-flow.md)
+- [Pose Features 연결 흐름](./03-pose-features-bridge.md)
 
 ## 검증 상태를 쓰는 규칙
 
