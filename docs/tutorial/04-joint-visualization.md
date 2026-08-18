@@ -2,11 +2,9 @@
 
 > 상태: 코드 구조 검증 완료, Apple Vision Pro 실기기 미검증
 >
-> 담당: @sueheo · 교차 리뷰: @im-siu
->
-> 기준: Issue #5, #15 / PR #8 커밋 [`d3b57bd`](https://github.com/im-siu/2026TechMap_tutorial/commit/d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f)
+> 예제 코드 기준: PR #8 / 커밋 [`d3b57bd`](https://github.com/im-siu/2026TechMap_tutorial/commit/d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f)
 
-[이전: 3장 양손 추적 시작](./02-hand-tracking-flow.md) · [다음: 5장 Pose Features로 이어가기](./03-pose-features-bridge.md)
+이전: 3장 양손 추적 시작(작성 예정) · 다음: 5장 Pose Features로 이어가기(작성 예정)
 
 ## 이 장에서 만들 결과
 
@@ -227,4 +225,4 @@ originFromJointTransform
 - 현재 추적 손실 정책과 실기기에서 다시 결정할 정책을 구분할 수 있다.
 - 시각화에 사용한 좌표가 5장 Pose Features 입력으로 이어지는 흐름을 설명할 수 있다.
 
-[이전: 3장 양손 추적 시작](./02-hand-tracking-flow.md) · [다음: 5장 Pose Features로 이어가기](./03-pose-features-bridge.md)
+이전: 3장 양손 추적 시작(작성 예정) · 다음: 5장 Pose Features로 이어가기(작성 예정)
