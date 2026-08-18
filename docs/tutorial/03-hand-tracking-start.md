@@ -1,6 +1,7 @@
 # 03. 양손 추적 시작
 
 > 상태: 초안
+> 예제 코드 기준: PR #8 / `d3b57bd`
 
 ## 이 장의 목표
 
@@ -69,6 +70,8 @@ final class HandTrackingService {
 
 ARKit 입력을 View 안에 직접 섞지 않고 Service로 분리하면, SwiftUI 화면과 RealityKit 시각화는 "현재 손 추적 상태가 무엇인지"만 받아서 사용할 수 있다.
 
+`@MainActor`는 손 추적 update를 받은 뒤 UI 상태와 RealityKit callback을 같은 메인 액터에서 갱신하기 위한 선택이다. `@Observable`은 `status`, `leftHandSummary`, `rightHandSummary`처럼 SwiftUI 화면이 관찰해야 하는 값을 자동으로 갱신하기 위해 사용한다.
+
 ## 지원 여부 먼저 확인하기
 
 손 추적을 시작하기 전에 현재 실행 환경이 ARKit Hand Tracking을 지원하는지 확인한다.
@@ -90,6 +93,8 @@ guard HandTrackingProvider.isSupported else {
 지원 여부를 통과하면 상태를 `starting`으로 바꾸고 비동기 Task 안에서 세션을 시작한다.
 
 ```swift
+guard trackingTask == nil else { return }
+
 status = .starting
 
 trackingTask = Task { @MainActor [weak self] in
@@ -111,7 +116,9 @@ trackingTask = Task { @MainActor [weak self] in
 }
 ```
 
-`session.run([provider])`는 ARKit 세션에 Hand Tracking Provider를 등록하고 실행한다. 이 과정에서 손 추적 권한 요청이 필요할 수 있다.
+`guard trackingTask == nil else { return }`는 이미 실행 중인 손 추적 Task가 있을 때 새 Task를 만들지 않기 위한 방어 코드다. Immersive Space가 다시 나타나거나 `start()`가 연속 호출되더라도 `anchorUpdates`를 듣는 Task가 두 개 이상 생기지 않게 한다.
+
+`session.run([provider])`는 ARKit 세션에 Hand Tracking Provider를 등록하고 실행한다. 예제 코드는 `requestAuthorization(for:)`를 먼저 호출하지 않고, 세션 실행 흐름에서 필요한 권한 요청이 이어지도록 둔다. 튜토리얼 초반에는 권한 요청 단계를 따로 분리하기보다 "세션을 시작하면 필요한 권한 흐름도 함께 진행된다"는 모델로 단순화한다. 자세한 동작은 Apple의 [ARKitSession.run(_:)](<https://developer.apple.com/documentation/arkit/arkitsession/run(_:)>) 문서를 함께 확인한다.
 
 세션 시작에 성공하면 `status`를 `running`으로 바꾸고, `provider.anchorUpdates`를 순회하면서 새로 들어오는 `HandAnchor`를 처리한다.
 
@@ -211,11 +218,13 @@ let joints = HandJointCatalog.all.compactMap { jointName -> HandJointSample? in
 
 여기서 중요한 정책은 누락된 관절을 임의 좌표로 채우지 않는 것이다. 추적되지 않은 관절을 `(0, 0, 0)` 같은 값으로 대체하면 다음 장의 시각화와 5장의 Pose Features 계산이 실제 손 상태와 다른 값을 사용하게 된다.
 
+따라서 `joints.count`는 프레임마다 달라질 수 있다. 4장의 시각화는 snapshot에 들어 있는 관절만 그려야 하고, 5장의 Pose Features 계산은 필요한 관절이 없을 때 계산을 건너뛰거나 별도 정책을 적용해야 한다.
+
 관절 transform 계산과 공간 시각화는 4장에서 더 자세히 다룬다. 3장에서는 "추적된 관절만 다음 단계로 넘긴다"는 정책을 이해하는 데 집중한다.
 
 ## 상태를 UI와 시각화에 전달하기
 
-`HandTrackingSnapshot`은 현재 프레임에서 알고 있는 왼손과 오른손 상태를 담는다.
+`HandTrackingSnapshot`은 왼손과 오른손의 최신 상태를 담는다.
 
 ```swift
 struct HandTrackingSnapshot {
@@ -237,6 +246,8 @@ struct HandSnapshot {
 ```
 
 이 구조를 사용하면 UI는 왼손/오른손 관절 수를 표시할 수 있고, RealityKit 시각화는 현재 추적된 관절만 그릴 수 있다.
+
+다만 `anchorUpdates`는 양손을 항상 같은 timestamp의 한 프레임으로 묶어 전달하지 않는다. 한쪽 손 update가 들어오면 그 손의 최신값을 갱신하고, 반대쪽 손은 이전에 받은 최신값을 유지한다. 그래서 `HandTrackingSnapshot`은 "동시에 촬영된 양손 프레임"이라기보다 "각 손의 가장 최근 값 묶음"에 가깝다. 5장에서 양손 거리나 방향을 계산할 때는 이 시간 차를 어떻게 다룰지 별도 정책이 필요할 수 있다.
 
 ```swift
 onSnapshotChanged?(latestSnapshot)
@@ -288,4 +299,4 @@ Simulator와 Xcode 빌드는 코드 구조를 확인하는 데 도움이 되지�
 ## 이전 장 / 다음 장
 
 - 이전: [02. 첫 Immersive Space](./02-first-immersive-space.md)
-- 다음: [04. 관절을 공간에 그리기](./04-visualize-hand-joints.md)
+- 다음: 04. 관절을 공간에 그리기: 작성 예정
