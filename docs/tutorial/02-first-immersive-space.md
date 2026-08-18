@@ -1,7 +1,6 @@
 # 02. 첫 Immersive Space
 
 > 상태: 초안
-> 기준 코드: PR #8 `d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f`
 
 ## 이 장의 목표
 
@@ -16,9 +15,11 @@
 
 ## Window와 Immersive Space
 
-visionOS 앱은 일반적인 창 UI와 공간 안에 배치되는 몰입형 UI를 함께 사용할 수 있다.
+visionOS 앱은 일반적인 창 UI와 공간 안에 배치되는 몰입형 UI를 함께 사용할 수 있다. Window는 경계가 있는 2D 창이고, Immersive Space는 창 바깥의 주변 공간에 3D 콘텐츠를 배치하는 Scene이다.
 
 Hand Jutsu에서는 창 UI를 시작점으로 사용한다. 창에는 프로젝트 이름, Hand Tracking 상태, Immersive Space를 여는 버튼이 표시된다. Immersive Space는 손 관절을 공간에 그리기 위한 RealityKit 장면을 담는다.
+
+Window와 Immersive Space의 개념은 Apple의 [Presenting windows and spaces](https://developer.apple.com/documentation/visionos/presenting-windows-and-spaces)와 [Immersive spaces](https://developer.apple.com/documentation/swiftui/immersive-spaces) 문서에서 더 자세히 확인할 수 있다.
 
 ```text
 WindowGroup
@@ -33,7 +34,7 @@ WindowGroup
 
 ## 앱의 Scene 구조
 
-기준 코드의 `HandJutsuApp`은 두 개의 Scene을 가진다.
+예제 코드의 `HandJutsuApp`은 두 개의 Scene을 가진다.
 
 ```swift
 WindowGroup {
@@ -51,6 +52,7 @@ ImmersiveSpace(id: appModel.immersiveSpaceID) {
             appModel.immersiveSpaceState = .closed
         }
 }
+.immersionStyle(selection: .constant(.full), in: .full)
 ```
 
 `WindowGroup`은 사용자가 처음 보는 창을 만든다. 이 창 안의 `ContentView`에서 Immersive Space를 여는 버튼을 제공한다.
@@ -58,6 +60,12 @@ ImmersiveSpace(id: appModel.immersiveSpaceID) {
 `ImmersiveSpace`는 공간 장면의 진입점이다. `id`는 나중에 `openImmersiveSpace(id:)`를 호출할 때 같은 값으로 사용된다.
 
 `onAppear`와 `onDisappear`에서는 Immersive Space가 실제로 열리거나 닫힌 시점에 상태를 갱신한다. 버튼을 누른 순간이 아니라 Scene의 생명주기 이벤트를 기준으로 상태를 확정하는 것이 중요하다.
+
+> Tip: Hand Jutsu가 두 개의 Scene을 두는 이유는 창과 공간이 맡는 일이 다르기 때문이다. 창은 사용자가 앱 상태를 확인하고 Immersive Space를 여는 제어 화면이고, Immersive Space는 손 관절을 실제 공간에 배치하는 실행 화면이다.
+
+visionOS 앱에서 동시에 열 수 있는 Immersive Space는 하나뿐이다. 그래서 Hand Jutsu는 열기와 닫기 요청이 겹치지 않도록 하나의 `appModel`에서 전환 상태를 관리한다. `appModel`은 `WindowGroup`과 `ImmersiveSpace` 양쪽에 `.environment(appModel)`로 전달된다. 두 Scene이 같은 `immersiveSpaceID`와 전환 상태를 공유해야 버튼 상태와 실제 공간 상태가 어긋나지 않는다.
+
+`.immersionStyle(selection: .constant(.full), in: .full)`은 이 Immersive Space를 full immersion으로 연다. Hand Jutsu에서는 손 관절 시각화에 집중하기 위해 주변 passthrough보다 앱의 공간 장면을 우선하는 선택이다. 실제 프로젝트에서 손 관절을 현실 공간 위에 가볍게 겹쳐 보는 목적이라면 `mixed`가 더 적절할 수 있으므로, immersion style은 만들고 싶은 사용자 경험에 맞춰 선택한다.
 
 ## AppModel이 관리하는 상태
 
@@ -118,7 +126,7 @@ case .inTransition:
 }
 ```
 
-닫을 때는 `dismissImmersiveSpace()`를 호출한다. 이때 버튼 코드에서 바로 `closed`로 확정하지 않고, `ImmersiveView.onDisappear()`에서 닫힘 상태를 반영한다.
+닫을 때는 `dismissImmersiveSpace()`를 호출한다. 이때 버튼 코드에서 바로 `closed`로 확정하지 않고, `HandJutsuApp`에서 `ImmersiveView()`에 붙인 `onDisappear`가 실행될 때 닫힘 상태를 반영한다.
 
 열 때는 `openImmersiveSpace(id:)`를 호출한다. 열기에 성공하면 `ImmersiveView.onAppear()`에서 `open` 상태가 된다. 사용자가 취소하거나 오류가 발생하면 다시 `closed` 상태로 돌린다.
 
@@ -130,7 +138,7 @@ case .inTransition:
 
 ## ImmersiveView에서 준비하는 것
 
-`ImmersiveView`는 RealityKit 장면을 만들고, 공간 안에서 사용할 root entity를 추가한다.
+`ImmersiveView`는 RealityKit 장면을 만들고, 공간 안에서 사용할 root entity를 추가한다. 아래 코드에 등장하는 `HandJointVisualizer`와 `HandTrackingService`는 뒤 장에서 자세히 다룬다. 이 장에서는 `RealityView`가 생성될 때 준비하고 사라질 때 정리하는 생명주기만 보면 된다.
 
 ```swift
 RealityView { content in
@@ -148,7 +156,7 @@ RealityView { content in
 
 이 장에서는 Immersive Space 생명주기를 이해하는 것이 목표다. `handTracking.start()`의 내부 동작과 관절 시각화는 다음 장과 4장에서 나누어 다룬다.
 
-여기서 중요한 점은 Immersive Space가 열릴 때 공간 장면에 필요한 준비를 하고, 닫힐 때 사용 중인 작업을 정리한다는 것이다.
+여기서 중요한 점은 Immersive Space가 열릴 때 공간 장면에 필요한 준비를 하고, 닫힐 때 사용 중인 작업을 정리한다는 것이다. `HandJutsuApp`의 `onDisappear`는 공간이 닫혔다는 앱 상태를 동기화하고, `ImmersiveView` 내부의 `RealityView.onDisappear`는 Hand Tracking 중지처럼 리소스 정리를 담당한다.
 
 ## Simulator에서 확인할 수 있는 것
 
@@ -182,4 +190,4 @@ Apple Vision Pro 실기기에서는 다음을 별도로 확인해야 한다.
 ## 이전 장 / 다음 장
 
 - 이전: [01. Hand Jutsu 시작하기](./01-hand-jutsu-overview.md)
-- 다음: [03. 양손 추적 시작](./03-hand-tracking-start.md)
+- 다음: 03. 양손 추적 시작: 작성 예정
