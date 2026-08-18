@@ -12,6 +12,8 @@
 
 3장에서 받은 `HandTrackingSnapshot`을 RealityKit 시각화 계층에 전달해 왼손 관절은 파란 구체, 오른손 관절은 분홍 구체로 표현한다.
 
+이 장은 3장에서 `HandTrackingService`, `HandTrackingSnapshot`과 `HandJointSample`이 준비됐다고 가정한다. 여기서는 ARKit 세션을 다시 설명하지 않고, 제공된 snapshot을 RealityKit 장면에 어떻게 반영할지에 집중한다. 코드 조각은 위에 연결한 PR #8 기준 구현에서 가져왔다.
+
 이 장을 마치면 다음을 설명할 수 있다.
 
 - 관절 Entity를 시작할 때 한 번 만들고 이후에는 transform과 표시 상태만 갱신하는 이유
@@ -32,6 +34,8 @@ HandTrackingProvider.anchorUpdates
 ```
 
 `HandTrackingService`는 ARKit 입력과 좌표 계산을 담당하고, `HandJointVisualizer`는 전달받은 결과를 RealityKit Entity에 반영한다. 입력 수집과 화면 표현을 분리하면 5장에서 같은 snapshot을 시각화가 아닌 특징 계산에도 재사용할 수 있다.
+
+두 타입은 모두 `@MainActor`에서 동작한다. ARKit update를 받은 뒤 RealityKit Entity를 바꾸는 callback도 메인 액터에서 실행되므로, 추적 작업이 별도 `Task`를 사용하더라도 장면 변경의 실행 위치가 흩어지지 않는다.
 
 ## 1단계: 관절 Entity를 미리 만든다
 
@@ -56,6 +60,10 @@ private func createJointEntities() {
     }
 }
 ```
+
+`rootEntity`는 좌우 손의 모든 관절 Entity를 묶는 컨테이너다. `RealityView`에는 이 root만 한 번 추가하고, 이후에는 이미 연결된 자식 Entity를 찾아 갱신한다. 관절별 Entity를 매 update마다 장면에 직접 추가하거나 제거하지 않는 이유도 여기에 있다.
+
+구체 반지름 `0.008`은 RealityKit의 미터 단위로 8mm다. 실제 관절 크기를 재현한 값이 아니라, 손을 지나치게 가리지 않으면서 관절 위치를 구분하기 위한 Spike의 디버그 시작값이다. 다른 시야 거리나 표시 목적에서는 크기를 다시 조정해야 한다.
 
 `jointEntities`는 손 방향과 관절 이름을 키로 사용한다.
 
@@ -163,6 +171,8 @@ RealityView { content in
 let column = joint.originFromJointTransform.columns.3
 let position = SIMD3<Float>(column.x, column.y, column.z)
 ```
+
+ARKit transform의 translation 단위는 미터이며, `SIMD3`로 바꾸면 회전과 크기 정보는 제외되고 위치만 남는다. 5장에서 거리와 방향을 비교하려면 모든 관절이 같은 월드 원점과 같은 단위를 사용해야 한다.
 
 4장에서는 전체 4×4 transform을 RealityKit Entity에 적용한다. 5장에서는 같은 transform에서 위치만 꺼내 ARKit에 의존하지 않는 Pose Features 입력으로 변환한다.
 
