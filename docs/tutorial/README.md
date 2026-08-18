@@ -62,7 +62,7 @@ Immersive Space 열기
 
 - [01. Hand Jutsu 시작하기](./01-hand-jutsu-overview.md)
 - [02. 첫 Immersive Space](./02-first-immersive-space.md)
-- 03. 양손 추적 시작: 작성 예정
+- [03. 양손 추적 시작](./03-hand-tracking-start.md)
 - 04. 관절을 공간에 그리기: 작성 예정
 - 05. Pose Features로 이어가기: 작성 예정
 
