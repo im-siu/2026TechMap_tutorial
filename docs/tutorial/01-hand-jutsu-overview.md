@@ -40,10 +40,10 @@ ImmersiveSpace
 → HandAnchor
 → Joint world transform
 → Pose Features
-→ Hand Pose 판정 재료
+→ Hand Pose 판정과 근거 표시
 ```
 
-이 단계에서는 포즈 이름을 안정적으로 확정하거나 화려한 술법 효과를 완성하는 것보다, Hand Tracking 데이터가 어떤 형태로 들어오고 다음 계산 단계로 어떻게 이어지는지 이해하는 것을 우선한다.
+이 단계에서는 Hand Pose 이름과 판정 근거를 표시하는 데까지 다룬다. 다만 실제 손 입력에서 판정이 얼마나 안정적인지는 Apple Vision Pro 실기기에서 비교하며 조정해야 한다.
 
 ## 필요한 사전 지식
 
@@ -64,7 +64,7 @@ RealityKit, ARKit, 3D 좌표 변환, Hand Tracking은 처음 접해도 된다. �
 | 2 | 첫 Immersive Space | Window와 Immersive Space의 역할 이해 |
 | 3 | 양손 추적 시작 | `HandTrackingProvider`와 `ARKitSession` 생명주기 이해 |
 | 4 | 관절을 공간에 그리기 | Hand Anchor와 Joint transform으로 관절 위치 표시 |
-| 5 | Pose Features로 이어가기 | 관절 월드 좌표를 손 모양 판정 재료로 변환 |
+| 5 | Pose Features로 Hand Pose 판정하기 | 포즈 이름과 판정 근거 표시 |
 
 ## 실기기 없이 따라갈 수 있는 부분
 
@@ -85,7 +85,7 @@ RealityKit, ARKit, 3D 좌표 변환, Hand Tracking은 처음 접해도 된다. �
 
 ## 이번 튜토리얼에서 다루지 않는 것
 
-이 튜토리얼은 손 추적과 포즈 판정의 재료를 만드는 데 집중한다. 아래 내용은 이후 심화 단계에서 다룬다.
+이 튜토리얼은 양손 Hand Pose를 판정하고 그 근거를 확인하는 데 집중한다. 아래 내용은 이후 심화 단계에서 다룬다.
 
 - 손 떨림과 오인식을 줄이는 smoothing
 - 포즈가 일정 시간 유지되었는지 확인하는 상태 처리
@@ -103,4 +103,4 @@ RealityKit, ARKit, 3D 좌표 변환, Hand Tracking은 처음 접해도 된다. �
 
 ## 다음 장
 
-[02. 첫 Immersive Space](./02-first-immersive-space.md)에서는 visionOS 앱에서 Window와 Immersive Space가 어떤 역할을 하는지 살펴본다.
+[02. Hand Tracking 흐름](./02-hand-tracking-flow.md)에서는 visionOS 앱에서 Immersive Space와 Hand Tracking 흐름이 어떻게 이어지는지 살펴본다.
