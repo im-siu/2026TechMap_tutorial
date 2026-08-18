@@ -45,8 +45,8 @@ Immersive Space 열기
 | --- | --- |
 | `01-hand-jutsu-overview.md` | 1장 Hand Jutsu 시작하기 |
 | `02-hand-tracking-flow.md` | 2장 첫 Immersive Space, 3장 양손 추적 시작과 4장의 배경 초안 |
-| `03-pose-features-bridge.md` | 5장 Pose Features로 이어가기 |
 | `04-joint-visualization.md` | 4장 관절을 공간에 그리기 장별 본문 초안 |
+| `05-pose-features.md` | 5장 Pose Features로 이어가기 장별 본문 초안 |
 
 최종 튜토리얼 본문 작성 단계에서는 필요에 따라 `01`-`05` 구조로 분리한다.
 
@@ -63,8 +63,8 @@ Immersive Space 열기
 
 - [01. Hand Jutsu 시작하기](./01-hand-jutsu-overview.md)
 - [02. Hand Tracking 흐름](./02-hand-tracking-flow.md)
-- [03. Pose Features 연결 흐름](./03-pose-features-bridge.md)
 - [04. 관절을 공간에 그리기](./04-joint-visualization.md)
+- [05. Pose Features로 이어가기](./05-pose-features.md)
 
 ## 검증 상태를 쓰는 규칙
 
