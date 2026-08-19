@@ -1,0 +1,16 @@
+.DS_Store
+
+# Xcode user state
+*.xcuserstate
+xcuserdata/
+
+# Build products
+DerivedData/
+build/
+
+# Xcode template sample content that this spike does not use
+HandJutsu/Packages/
+
+# Swift Package Manager
+.build/
+Package.resolved
