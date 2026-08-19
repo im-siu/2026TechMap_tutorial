@@ -1,0 +1,13 @@
+@Tutorials(name: "Hand Jutsu") {
+    @Intro(title: "Hand Jutsu 튜토리얼") {
+        SwiftUI, RealityKit, ARKit을 사용해 Apple Vision Pro에서 양손을 추적하고, 손 모양 판정에 필요한 관절 데이터를 만드는 과정을 배운다.
+    }
+
+    @Chapter(name: "기본 구조 만들기") {
+        Hand Jutsu 앱의 목표를 확인하고, 손 추적을 시작하기 전에 Immersive Space를 여는 기본 구조를 만든다.
+
+        @Image(source: hand-jutsu-overview.svg, alt: "양손 관절 데이터가 Hand Jutsu 튜토리얼 흐름으로 이어지는 개념 이미지")
+
+        @TutorialReference(tutorial: "doc:02-Creating-Immersive-Space")
+    }
+}
