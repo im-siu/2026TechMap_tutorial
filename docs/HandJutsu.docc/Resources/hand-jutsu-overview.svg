@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Hand Jutsu tutorial overview</title>
+  <desc id="desc">A simple diagram showing hand tracking data flowing into pose features.</desc>
+  <rect width="960" height="540" fill="#101820"/>
+  <circle cx="250" cy="270" r="95" fill="#1B75BB" opacity="0.24"/>
+  <circle cx="710" cy="270" r="95" fill="#E85D75" opacity="0.24"/>
+  <g fill="none" stroke="#6EC6FF" stroke-width="8" stroke-linecap="round">
+    <path d="M195 320 C175 275 185 230 220 205"/>
+    <path d="M220 205 L230 130"/>
+    <path d="M240 205 L270 115"/>
+    <path d="M260 215 L315 135"/>
+    <path d="M275 235 L345 185"/>
+    <path d="M285 265 L355 255"/>
+  </g>
+  <g fill="none" stroke="#FF8EA1" stroke-width="8" stroke-linecap="round">
+    <path d="M765 320 C785 275 775 230 740 205"/>
+    <path d="M740 205 L730 130"/>
+    <path d="M720 205 L690 115"/>
+    <path d="M700 215 L645 135"/>
+    <path d="M685 235 L615 185"/>
+    <path d="M675 265 L605 255"/>
+  </g>
+  <path d="M390 270 H570" stroke="#F7D774" stroke-width="10" stroke-linecap="round"/>
+  <path d="M550 245 L580 270 L550 295" fill="none" stroke="#F7D774" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="480" y="220" text-anchor="middle" fill="#F8FAFC" font-family="Helvetica, Arial, sans-serif" font-size="34" font-weight="700">Hand Jutsu</text>
+  <text x="480" y="330" text-anchor="middle" fill="#D6E4F0" font-family="Helvetica, Arial, sans-serif" font-size="22">Hand Tracking → Pose Features</text>
+</svg>
