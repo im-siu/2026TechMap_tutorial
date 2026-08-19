@@ -19,4 +19,3 @@ Hand Jutsu는 손을 단순한 입력 장치가 아니라 공간 안의 데이�
 ### 시작하기
 
 - <doc:GettingStarted>
-- <doc:CreatingImmersiveSpace>
