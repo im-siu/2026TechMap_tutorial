@@ -13,6 +13,7 @@ ln -s "$OUTPUT_PATH" "$PREVIEW_ROOT/$REPOSITORY_NAME"
 cat <<EOF
 Serving DocC preview at http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/documentation/handjutsu/
 Getting Started: http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/documentation/hand-jutsu/gettingstarted/
+Immersive Space: http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/documentation/hand-jutsu/creatingimmersivespace/
 EOF
 
-python3 -m http.server "$PORT" --directory "$PREVIEW_ROOT"
+python3 -m http.server "$PORT" --bind 127.0.0.1 --directory "$PREVIEW_ROOT"
