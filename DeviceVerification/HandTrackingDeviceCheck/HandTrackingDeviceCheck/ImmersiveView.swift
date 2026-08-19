@@ -40,7 +40,7 @@ private struct VerificationHUD: View {
                 Circle()
                     .fill(service.recordingState.isRecording ? .red : .secondary)
                     .frame(width: 12, height: 12)
-                Text(service.recordingState.isRecording ? "REC" : "READY")
+                Text(service.recordingState.isRecording ? "DATA REC" : "READY")
                     .font(.headline.bold())
                 if service.recordingState.isRecording {
                     TimelineView(.periodic(from: .now, by: 0.1)) { context in
@@ -54,7 +54,7 @@ private struct VerificationHUD: View {
                 .font(.caption.monospaced())
 
             if let marker = service.currentMarker {
-                Text("#\(marker.index)  \(marker.label)")
+                Text("#\(marker.index)  \(marker.displayText)")
                     .font(.title.bold())
                     .foregroundStyle(.yellow)
             } else {

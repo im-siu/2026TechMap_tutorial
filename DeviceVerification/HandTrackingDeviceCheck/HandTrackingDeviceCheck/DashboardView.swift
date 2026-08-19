@@ -4,8 +4,8 @@ struct DashboardView: View {
     @Environment(AppModel.self) private var appModel
     @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
-
-    private let markerLabels = ["NEUTRAL", "OPEN", "FIST", "PINCH", "OCCLUDE", "RECOVER"]
+    @State private var isShowingCustomMarker = false
+    @State private var customMarkerText = ""
 
     var body: some View {
         ScrollView {
@@ -28,6 +28,9 @@ struct DashboardView: View {
             .padding(28)
         }
         .frame(width: 760, height: 760)
+        .sheet(isPresented: $isShowingCustomMarker) {
+            customMarkerSheet
+        }
     }
 
     private var service: HandTrackingService {
@@ -149,7 +152,7 @@ struct DashboardView: View {
                     Button {
                         service.startRecording()
                     } label: {
-                        Label("검증 기록 시작", systemImage: "record.circle")
+                        Label("수치 기록 시작", systemImage: "record.circle")
                     }
                     .disabled(!service.canStartRecording)
                 }
@@ -162,29 +165,76 @@ struct DashboardView: View {
             }
             .buttonStyle(.borderedProminent)
 
-            Text("화면 녹화와 CSV를 맞출 때 아래 마커를 누르세요. 동일한 세션 ID, 경과 시간, 마커가 Immersive HUD에도 표시됩니다.")
+            Text("이 버튼은 관절·특징 수치만 기록합니다. 화면과 실제 손 영상은 자동 녹화되지 않으므로 기기 화면 녹화 또는 Developer Capture를 별도로 시작하세요.")
+                .font(.caption)
+                .foregroundStyle(.orange)
+
+            Text("검증 대상 수인 3개")
+                .font(.subheadline.bold())
+
+            Text("손동작을 시작하는 순간 누르면 이름과 시간이 CSV 및 Immersive HUD에 함께 남습니다.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 8) { markerButtons }
-                VStack(alignment: .leading, spacing: 8) { markerButtons }
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 140), spacing: 8)],
+                alignment: .leading,
+                spacing: 8
+            ) {
+                ForEach(NinjutsuHandSeal.allCases) { seal in
+                    Button(seal.displayName) {
+                        service.addHandSealMarker(seal)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(!service.recordingState.isRecording)
+                }
+
+                Button {
+                    customMarkerText = ""
+                    isShowingCustomMarker = true
+                } label: {
+                    Label("기타", systemImage: "square.and.pencil")
+                }
+                .buttonStyle(.bordered)
+                .disabled(!service.recordingState.isRecording)
             }
+
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .glassBackgroundEffect()
     }
 
-    @ViewBuilder
-    private var markerButtons: some View {
-        ForEach(markerLabels, id: \.self) { label in
-            Button(label) {
-                service.addMarker(label)
+    private var customMarkerSheet: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("기타 손동작 기록")
+                .font(.title2.bold())
+            Text("현재 수행하는 손동작을 알아볼 수 있게 적어 주세요. 입력한 문장은 영상 HUD와 내보낸 markers.csv에 저장됩니다.")
+                .foregroundStyle(.secondary)
+
+            TextField(
+                "예: 오른손 검지·중지를 펴고 왼손은 주먹",
+                text: $customMarkerText,
+                axis: .vertical
+            )
+            .lineLimit(3...6)
+            .textFieldStyle(.roundedBorder)
+
+            HStack {
+                Spacer()
+                Button("취소", role: .cancel) {
+                    isShowingCustomMarker = false
+                }
+                Button("기타 마커 저장") {
+                    service.addCustomMarker(customMarkerText)
+                    isShowingCustomMarker = false
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(customMarkerText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-            .buttonStyle(.bordered)
-            .disabled(!service.recordingState.isRecording)
         }
+        .padding(28)
+        .frame(width: 560, height: 300)
     }
 
     private var liveMeasurementsCard: some View {

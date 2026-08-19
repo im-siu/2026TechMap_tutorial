@@ -16,13 +16,17 @@ nonisolated struct AnchorCaptureInput: Codable, Sendable {
     let handIsTracked: Bool
     let joints: [JointCaptureInput]
     let poseFeatures: PoseFeatureEvaluationSnapshot
+    let activeMarker: MarkerCaptureInput?
 }
 
 nonisolated struct MarkerCaptureInput: Codable, Sendable {
     let wallClock: Date
     let elapsedSeconds: TimeInterval
     let index: Int
+    let category: RecordingMarkerCategory
+    let code: String
     let label: String
+    let customDescription: String?
 }
 
 nonisolated struct VerificationRecordingMetadata: Codable, Sendable {
@@ -64,7 +68,7 @@ nonisolated struct VerificationRecordingExport: Sendable {
 
 nonisolated private struct AnchorLogEnvelope: Encodable {
     let kind = "anchor"
-    let schemaVersion = 1
+    let schemaVersion = 2
     let sessionID: String
     let sequence: Int
     let elapsedAnchorSeconds: TimeInterval
@@ -74,7 +78,7 @@ nonisolated private struct AnchorLogEnvelope: Encodable {
 
 nonisolated private struct MarkerLogEnvelope: Encodable {
     let kind = "marker"
-    let schemaVersion = 1
+    let schemaVersion = 2
     let sessionID: String
     let payload: MarkerCaptureInput
 }
@@ -263,7 +267,10 @@ actor VerificationSessionRecorder {
                 String(marker.index),
                 Self.float(marker.elapsedSeconds),
                 ISO8601DateFormatter().string(from: marker.wallClock),
-                marker.label
+                marker.category.rawValue,
+                marker.code,
+                marker.label,
+                marker.customDescription ?? ""
             ].map(Self.csvEscape).joined(separator: ","),
             to: markersHandle
         )
@@ -340,20 +347,22 @@ actor VerificationSessionRecorder {
         input: AnchorCaptureInput,
         joint: JointCaptureInput
     ) -> String {
-        [
+        let values = [
             sessionID,
             String(sequence),
             Self.float(input.anchorTimestampSeconds),
             Self.float(elapsedAnchor),
             input.side,
-            input.event,
+            input.event
+        ] + Self.markerContextValues(input.activeMarker) + [
             String(input.handIsTracked),
             joint.name,
             String(joint.isTracked),
             Self.float(joint.xMeters),
             Self.float(joint.yMeters),
             Self.float(joint.zMeters)
-        ].map(Self.csvEscape).joined(separator: ",")
+        ]
+        return values.map(Self.csvEscape).joined(separator: ",")
     }
 
     private func featuresCSVRow(
@@ -370,6 +379,7 @@ actor VerificationSessionRecorder {
             input.side,
             input.event
         ]
+        values += Self.markerContextValues(input.activeMarker)
         values += Self.handFeatureValues(input.poseFeatures.left)
         values += Self.handFeatureValues(input.poseFeatures.right)
 
@@ -418,6 +428,17 @@ actor VerificationSessionRecorder {
             ]
         }
         return values
+    }
+
+    private static func markerContextValues(_ marker: MarkerCaptureInput?) -> [String] {
+        guard let marker else { return ["", "", "", "", ""] }
+        return [
+            String(marker.index),
+            marker.category.rawValue,
+            marker.code,
+            marker.label,
+            marker.customDescription ?? ""
+        ]
     }
 
     private func writeNDJSON<T: Encodable>(_ value: T, to handle: FileHandle?) throws {
@@ -512,14 +533,16 @@ actor VerificationSessionRecorder {
 
     private static let jointsCSVHeader = [
         "session_id", "sequence", "anchor_timestamp_s", "elapsed_anchor_s",
-        "side", "event", "hand_tracked", "joint", "joint_tracked",
+        "side", "event", "marker_index", "marker_category", "marker_code",
+        "marker_label", "marker_custom_description", "hand_tracked", "joint", "joint_tracked",
         "x_m", "y_m", "z_m"
     ].joined(separator: ",")
 
     private static let featuresCSVHeader: String = {
         var columns = [
             "session_id", "sequence", "anchor_timestamp_s", "elapsed_anchor_s",
-            "updated_side", "event"
+            "updated_side", "event", "marker_index", "marker_category",
+            "marker_code", "marker_label", "marker_custom_description"
         ]
         for side in ["left", "right"] {
             columns += [
@@ -550,7 +573,7 @@ actor VerificationSessionRecorder {
     }()
 
     private static let markersCSVHeader =
-        "session_id,marker_index,elapsed_wall_s,wall_clock,label"
+        "session_id,marker_index,elapsed_wall_s,wall_clock,category,code,label,custom_description"
 }
 
 enum RecorderError: LocalizedError {

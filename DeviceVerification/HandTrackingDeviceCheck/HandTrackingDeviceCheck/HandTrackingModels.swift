@@ -252,6 +252,56 @@ enum VerificationRecordingState: Equatable {
 
 struct RecordingMarker: Equatable {
     let index: Int
+    let category: RecordingMarkerCategory
+    let code: String
     let label: String
+    let customDescription: String?
     let elapsedSeconds: TimeInterval
+
+    var displayText: String {
+        guard let customDescription else { return label }
+        return "\(label): \(customDescription)"
+    }
+}
+
+nonisolated enum RecordingMarkerCategory: String, Codable, Sendable {
+    case system
+    case handSeal = "hand_seal"
+    case custom
+}
+
+nonisolated enum NinjutsuHandSeal: String, CaseIterable, Identifiable, Sendable {
+    case dog = "戌"
+    case tiger = "寅"
+    case ox = "丑"
+
+    var id: String { code }
+
+    var code: String {
+        switch self {
+        case .dog: "sul"
+        case .tiger: "in"
+        case .ox: "chuk"
+        }
+    }
+
+    var reading: String {
+        switch self {
+        case .dog: "술"
+        case .tiger: "인"
+        case .ox: "축"
+        }
+    }
+
+    var animal: String {
+        switch self {
+        case .dog: "개"
+        case .tiger: "호랑이"
+        case .ox: "소"
+        }
+    }
+
+    var displayName: String {
+        "\(rawValue) \(reading)(\(animal))"
+    }
 }

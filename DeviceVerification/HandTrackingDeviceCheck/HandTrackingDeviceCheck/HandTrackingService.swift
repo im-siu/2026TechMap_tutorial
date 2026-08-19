@@ -10,7 +10,6 @@ final class HandTrackingService {
     private let provider = HandTrackingProvider()
     private let recorder = VerificationSessionRecorder()
     private var trackingTask: Task<Void, Never>?
-    private var markerClearTask: Task<Void, Never>?
     private var latestSnapshot = HandTrackingSnapshot.empty
     private var latestAnchorTimestamp: [HandSide: TimeInterval] = [:]
     private var workingMetrics = VerificationMetrics()
@@ -22,6 +21,7 @@ final class HandTrackingService {
     private var lastPublishedAt = Date.distantPast
     private var lastUpdateBySide: [HandSide: Date] = [:]
     private var markerIndex = 0
+    private var activeMarkerCaptureInput: MarkerCaptureInput?
 
     var status: HandTrackingStatus = .idle
     var authorization: HandAuthorizationState = .unknown
@@ -152,6 +152,7 @@ final class HandTrackingService {
         recordedAnchorUpdateCount = 0
         markerIndex = 0
         currentMarker = nil
+        activeMarkerCaptureInput = nil
 
         let startedAt = Date()
         let metadata = makeRecordingMetadata(startedAt: startedAt)
@@ -164,7 +165,11 @@ final class HandTrackingService {
                 exportFolderURL = recording.folderURL
                 recordingState = .recording
                 addLog("검증 기록을 시작했습니다: \(recording.sessionID)")
-                addMarker("START")
+                addMarker(
+                    category: .system,
+                    code: "start",
+                    label: "START"
+                )
             } catch {
                 recordingState = .failed(error.localizedDescription)
                 addLog("기록 시작 오류: \(error.localizedDescription)")
@@ -175,7 +180,6 @@ final class HandTrackingService {
     func stopRecording() {
         guard recordingState.isRecording || isRecordingFailure else { return }
         recordingState = .stopping
-        markerClearTask?.cancel()
 
         let context = VerificationRecordingStopContext(
             leftTrackingLossCount: workingMetrics.left.lossCount,
@@ -196,6 +200,7 @@ final class HandTrackingService {
                 }
                 recordingStartedAt = nil
                 currentMarker = nil
+                activeMarkerCaptureInput = nil
             } catch {
                 recordingState = .failed(error.localizedDescription)
                 addLog("기록 종료 오류: \(error.localizedDescription)")
@@ -203,32 +208,58 @@ final class HandTrackingService {
         }
     }
 
-    func addMarker(_ label: String) {
+    func addHandSealMarker(_ seal: NinjutsuHandSeal) {
+        addMarker(
+            category: .handSeal,
+            code: seal.code,
+            label: seal.displayName
+        )
+    }
+
+    func addCustomMarker(_ description: String) {
+        let trimmed = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        addMarker(
+            category: .custom,
+            code: "custom",
+            label: "기타",
+            customDescription: trimmed
+        )
+    }
+
+    private func addMarker(
+        category: RecordingMarkerCategory,
+        code: String,
+        label: String,
+        customDescription: String? = nil
+    ) {
         guard recordingState.isRecording else { return }
         markerIndex += 1
         let marker = RecordingMarker(
             index: markerIndex,
+            category: category,
+            code: code,
             label: label,
+            customDescription: customDescription,
             elapsedSeconds: recordingElapsed()
         )
         currentMarker = marker
 
+        let captureInput = MarkerCaptureInput(
+            wallClock: Date(),
+            elapsedSeconds: marker.elapsedSeconds,
+            index: marker.index,
+            category: marker.category,
+            code: marker.code,
+            label: marker.label,
+            customDescription: marker.customDescription
+        )
+        activeMarkerCaptureInput = captureInput
+
         Task { [recorder] in
             try? await recorder.record(
-                marker: MarkerCaptureInput(
-                    wallClock: Date(),
-                    elapsedSeconds: marker.elapsedSeconds,
-                    index: marker.index,
-                    label: marker.label
-                )
+                marker: captureInput
             )
-        }
-
-        markerClearTask?.cancel()
-        markerClearTask = Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(2))
-            guard !Task.isCancelled else { return }
-            self?.currentMarker = nil
         }
     }
 
@@ -474,7 +505,8 @@ final class HandTrackingService {
                     side: side == .left ? "left" : "right",
                     handIsTracked: hand?.isTracked ?? false,
                     joints: joints,
-                    poseFeatures: workingPoseFeatures
+                    poseFeatures: workingPoseFeatures,
+                    activeMarker: activeMarkerCaptureInput
                 )
             )
             recordedAnchorUpdateCount += 1
@@ -487,7 +519,7 @@ final class HandTrackingService {
     private func makeRecordingMetadata(startedAt: Date) -> VerificationRecordingMetadata {
         let info = Bundle.main.infoDictionary ?? [:]
         return VerificationRecordingMetadata(
-            schemaVersion: 1,
+            schemaVersion: 2,
             issueNumber: 23,
             handTrackingReferenceCommit: "d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f",
             poseFeaturesReferenceCommit: "9d8dbae88be48d159f5a39a6d4fb1423e1db3e86",

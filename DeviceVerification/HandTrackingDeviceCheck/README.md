@@ -16,9 +16,9 @@ Pose 분류 임계값, smoothing, 히스테리시스와 술법 효과는 범위�
 4. Mac과 페어링한 Apple Vision Pro를 실행 대상으로 선택하고 Run합니다.
 5. **실기기 검증 시작**을 누르고 손 추적 권한을 허용합니다.
 6. 관절 구체와 좌우 `27 / 27`, Feature 입력 `25 / 25`를 확인합니다.
-7. 영상 증거가 필요하면 Xcode의 Reality Composer Pro Developer Capture 또는 기기 화면 녹화를 먼저 시작합니다.
-8. 앱에서 **검증 기록 시작**을 누릅니다. Immersive HUD의 `REC`, 세션 ID와 타이머가 영상에 들어가는지 확인합니다.
-9. 자세를 바꿀 때 `NEUTRAL`, `OPEN`, `FIST`, `PINCH`, `OCCLUDE`, `RECOVER` 마커를 누르고 해당 자세를 3~5초 유지합니다.
+7. 앱은 화면이나 실제 손 영상을 자동 녹화하지 않습니다. 영상 증거가 필요하면 Xcode의 Reality Composer Pro Developer Capture 또는 기기 화면 녹화를 먼저 시작합니다.
+8. 앱에서 **수치 기록 시작**을 누릅니다. Immersive HUD의 `DATA REC`, 세션 ID와 타이머가 영상에 들어가는지 확인합니다.
+9. 자세를 바꾸는 순간 `戌 술(개)`, `寅 인(호랑이)`, `丑 축(소)` 중 하나를 누르고 3~5초 유지합니다. 세 가지가 아닌 손동작은 **기타**를 누르고 설명을 입력합니다.
 10. **기록 종료** 뒤 **6개 파일 내보내기**로 AirDrop, Files 등을 선택합니다.
 11. 영상 파일 이름에 앱의 세션 ID(`HT-...`)를 넣고 `DEVICE_TEST_LOG.md`를 작성합니다.
 
@@ -64,10 +64,10 @@ ARKit transform의 translation과 PoseFeatures의 원본 거리 단위는 **미�
 
 | 파일 | 용도 |
 | --- | --- |
-| `anchors.ndjson` | 매 수신 Anchor update의 원본 구조, 27개 관절과 그 순간의 전체 PoseFeatures |
-| `joints.csv` | 분석하기 쉬운 관절별 long-format; update마다 27행, `joint_tracked`, `x_m/y_m/z_m` 포함 |
-| `features.csv` | 좌우 손바닥·다섯 손가락·양손 특징, 오류와 누락 관절, timestamp skew |
-| `markers.csv` | 영상과 맞추는 마커 번호·이름·기록 시작 이후 경과 시간 |
+| `anchors.ndjson` | 매 수신 Anchor update의 원본 구조, 27개 관절, 전체 PoseFeatures와 현재 수인 라벨 |
+| `joints.csv` | update마다 27행; 관절 좌표와 현재 `marker_code/label/custom_description` 포함 |
+| `features.csv` | 좌우 손바닥·손가락·양손 특징과 현재 `marker_code/label/custom_description` 포함 |
+| `markers.csv` | 수인 선택 순간의 번호·분류·코드·한글 이름·기타 설명·경과 시간 |
 | `metadata.json` | 기기/OS/앱/SDK, 스키마 버전, 두 Spike 기준 commit, 단위 |
 | `summary.json` | 시간·update 수·추적/비추적 행·특징 성공/실패·손실·마커 집계 |
 
@@ -75,13 +75,13 @@ ARKit transform의 translation과 PoseFeatures의 원본 거리 단위는 **미�
 
 ## 영상과 수치 맞추기
 
-영상 프레임 자체와 ARKit timestamp를 자동으로 같은 media container에 mux하지는 않습니다. 대신 아래 세 가지 동기화 단서를 영상과 파일에 동시에 남깁니다.
+화면과 실제 손 영상은 자동 녹화하지 않으며, 영상 프레임과 ARKit timestamp를 같은 media container에 자동 결합하지도 않습니다. 대신 아래 세 가지 동기화 단서를 영상과 파일에 동시에 남깁니다.
 
 - HUD의 고유 세션 ID
 - 기록 시작 기준 0.1초 타이머
-- 사용자가 누르는 번호 있는 자세 마커
+- 사용자가 누르는 `술/인/축/기타` 자세 마커
 
-예를 들어 영상에서 `#4 PINCH`가 보이면 `markers.csv`의 4번 행 `elapsed_wall_s`를 찾고, 같은 시간대의 `joints.csv`와 `features.csv`를 확인합니다. 프레임 단위 정밀 동기화가 필요해지면 이번 로그의 오차를 먼저 측정한 뒤 AVFoundation 기반 카메라/화면 캡처 결합을 별도 Issue로 진행합니다.
+선택한 마커는 다음 마커를 누를 때까지 활성 상태로 유지되고, 그동안의 모든 `joints.csv`와 `features.csv` 행에 반복 저장됩니다. 예를 들어 영상에서 `#2 戌 술(개)`가 보이면 CSV의 `marker_index=2`, `marker_code=sul`인 행을 바로 필터링할 수 있습니다. 기타 동작은 `marker_category=custom`과 `marker_custom_description`으로 찾습니다.
 
 ## 성공 기준
 
