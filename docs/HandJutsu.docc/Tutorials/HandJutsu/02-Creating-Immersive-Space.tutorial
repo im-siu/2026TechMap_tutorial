@@ -5,27 +5,15 @@
         이 튜토리얼에서는 기본 Window에서 버튼을 눌러 Immersive Space를 열고, 다시 닫을 수 있는 최소 구조를 만든다.
     }
 
-    @Section(title: "공간의 역할 나누기") {
+    @Section(title: "공간 식별자 만들기") {
         @ContentAndMedia {
             visionOS 앱은 기본 Window와 Immersive Space가 서로 다른 역할을 맡는다.
 
             Window는 사용자가 앱을 시작하고 상태를 확인하는 기본 화면이다. Hand Jutsu에서는 Immersive Space를 여는 버튼과 간단한 상태 표시를 둔다.
 
             Immersive Space는 사용자의 주변 공간 위에 3D 콘텐츠를 배치하는 영역이다. 이후 장에서 손 관절을 표시하는 RealityKit Entity와 `ARKitSession`은 이 공간 안에서 연결한다.
-        }
 
-        @Steps {
-            @Step {
-                이번 장에서는 손 추적을 시작하지 않고, Window에서 Immersive Space를 열고 닫는 구조만 만든다.
-            }
-        }
-    }
-
-    @Section(title: "공간 식별자 만들기") {
-        @ContentAndMedia {
-            Immersive Space를 열 때는 앱 안에서 같은 `id`를 사용해야 한다.
-
-            문자열을 여러 곳에 직접 쓰면 오타가 생기기 쉬우므로, 먼저 공간 식별자를 상수로 분리한다.
+            이번 장에서는 손 추적을 시작하지 않고, Window에서 Immersive Space를 열고 닫는 구조만 만든다. Immersive Space를 열 때는 앱 안에서 같은 `id`를 사용해야 하므로, 먼저 공간 식별자를 상수로 분리한다.
         }
 
         @Steps {
@@ -62,17 +50,9 @@
 
         @Steps {
             @Step {
-                `ContentView`에 `openImmersiveSpace`와 `dismissImmersiveSpace` 환경 값을 추가한다.
-            }
-
-            @Step {
-                `isImmersiveSpaceOpen` 상태를 추가하고, 버튼에서 공간 열기와 닫기를 분기한다.
+                `ContentView`에 Immersive Space를 열고 닫는 버튼 상태와 비동기 호출 흐름을 추가한다.
 
                 @Code(name: "ContentView.swift", file: "02-03-ContentView.swift")
-            }
-
-            @Step {
-                `openImmersiveSpace` 결과가 `.opened`일 때만 열린 상태로 표시한다.
             }
         }
     }
@@ -104,15 +84,9 @@
 
         @Steps {
             @Step {
-                Simulator에서 앱을 실행하고, 기본 Window가 표시되는지 확인한다.
-            }
+                Simulator에서 앱을 실행하고, 기본 Window가 표시되는지 확인한다. `Open Space` 버튼을 눌렀을 때 Immersive Space 요청이 동작하고, `Close Space` 버튼으로 다시 Window 중심 흐름으로 돌아올 수 있어야 한다.
 
-            @Step {
-                `Open Space` 버튼을 눌러 Immersive Space가 열리는지 확인한다.
-            }
-
-            @Step {
-                `Close Space` 버튼을 눌러 다시 Window 중심 흐름으로 돌아올 수 있는지 확인한다.
+                @Code(name: "ContentView.swift", file: "02-03-ContentView.swift")
             }
         }
     }
@@ -122,11 +96,15 @@
             이 장에서 만든 구조는 다음 장의 출발점이다.
 
             3장에서는 `ImmersiveView`가 열렸을 때 `ARKitSession`과 `HandTrackingProvider`를 시작하고, 왼손과 오른손 `HandAnchor`를 받는 흐름을 연결한다.
+
+            `WindowGroup`, `ImmersiveSpace`, `ImmersiveView`의 역할을 구분할 수 있다면 다음 장으로 넘어갈 준비가 된 것이다.
         }
 
         @Steps {
             @Step {
-                `WindowGroup`, `ImmersiveSpace`, `ImmersiveView`의 역할을 구분할 수 있는지 확인한다.
+                다음 장에서 Hand Tracking 코드를 연결할 기준점으로 `ImmersiveView`의 root entity를 유지한다.
+
+                @Code(name: "ImmersiveView.swift", file: "02-04-ImmersiveView.swift")
             }
         }
     }
