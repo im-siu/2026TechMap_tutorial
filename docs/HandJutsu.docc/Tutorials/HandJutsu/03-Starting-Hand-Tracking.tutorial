@@ -48,7 +48,7 @@
             @Step {
                 Anchor update를 순회하면서 `chirality`에 따라 왼손과 오른손 상태를 갱신한다.
 
-                @Code(name: "HandTrackingService.swift", file: "03-02-HandTrackingService.swift")
+                @Code(name: "HandTrackingService.swift", file: "03-03-HandTrackingService-Updates.swift")
             }
         }
     }
@@ -102,7 +102,7 @@
             @Step {
                 Apple Vision Pro 실기기에서 양손 상태가 바뀌는지 확인하고, 실기기에서 확인하지 못한 항목은 검증 기록에 남긴다.
 
-                @Code(name: "HandTrackingService.swift", file: "03-02-HandTrackingService.swift")
+                @Code(name: "HandTrackingService.swift", file: "03-06-HandTrackingService-Verification.swift")
             }
         }
     }

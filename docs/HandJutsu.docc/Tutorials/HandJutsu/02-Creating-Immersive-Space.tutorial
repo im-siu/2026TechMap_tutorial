@@ -86,7 +86,7 @@
             @Step {
                 Simulator에서 앱을 실행하고, 기본 Window가 표시되는지 확인한다. `Open Space` 버튼을 눌렀을 때 Immersive Space 요청이 동작하고, `Close Space` 버튼으로 다시 Window 중심 흐름으로 돌아올 수 있어야 한다.
 
-                @Code(name: "ContentView.swift", file: "02-03-ContentView.swift")
+                @Code(name: "ContentView.swift", file: "02-05-ContentView-Verification.swift")
             }
         }
     }
@@ -104,7 +104,7 @@
             @Step {
                 다음 장에서 Hand Tracking 코드를 연결할 기준점으로 `ImmersiveView`의 root entity를 유지한다.
 
-                @Code(name: "ImmersiveView.swift", file: "02-04-ImmersiveView.swift")
+                @Code(name: "ImmersiveView.swift", file: "02-06-ImmersiveView-Next.swift")
             }
         }
     }

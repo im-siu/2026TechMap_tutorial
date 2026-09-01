@@ -15,23 +15,64 @@ let changedLinks = 0;
 let changedHighlights = 0;
 
 const highlightLinesByFile = {
+  "02-01-AppSpace.swift": range(1, 3),
+  "02-02-HandJutsuApp.swift": range(3, 12),
+  "02-03-ContentView.swift": [
+    ...range(4, 7),
+    ...range(14, 27),
+  ],
+  "02-04-ImmersiveView.swift": range(4, 10),
+  "03-01-HandTrackingSnapshot.swift": range(3, 24),
+  "03-02-HandTrackingService.swift": [
+    ...range(4, 11),
+    ...range(13, 21),
+  ],
+  "03-03-HandTrackingService-Updates.swift": range(23, 24),
+  "03-03-ImmersiveView.swift": [
+    5,
+    ...range(13, 15),
+  ],
+  "03-04-HandJutsuApp.swift": [
+    5,
+    9,
+    13,
+  ],
+  "03-05-ContentView.swift": [
+    7,
+    ...range(16, 20),
+    ...range(41, 51),
+  ],
   "04-01-HandJointSample.swift": range(3, 20),
   "04-02-HandJointCatalog.swift": range(3, 33),
   "04-03-HandTrackingSnapshot.swift": [
-    ...range(7, 10),
+    10,
     17,
     ...range(30, 46),
   ],
-  "04-04-HandTrackingService.swift": [10, 23, 24],
-  "04-05-HandJointVisualizer.swift": range(5, 85),
+  "04-05-HandJointVisualizer-Root.swift": range(5, 13),
+  "04-05-HandJointVisualizer-Entities.swift": [
+    13,
+    ...range(16, 45),
+  ],
+  "04-06-HandJointVisualizer-Apply.swift": [
+    ...range(16, 18),
+    ...range(41, 54),
+  ],
+  "04-07-HandJointVisualizer-HideMissing.swift": [
+    43,
+    47,
+    56,
+    ...range(59, 62),
+    ...range(65, 72),
+  ],
   "04-06-ImmersiveView.swift": [6, 10, 11, 12],
   "05-01-HandJointPositionSample.swift": range(4, 18),
   "05-02-HandPoseFeature.swift": range(4, 31),
   "05-03-HandPoseFeatureBuilder.swift": [
     ...range(4, 33),
-    ...range(35, 45),
+  ],
+  "05-07-HandPoseFeatureBuilder-Relative.swift": [
     ...range(48, 56),
-    ...range(59, 64),
     ...range(68, 82),
   ],
   "05-04-HandTrackingSnapshot.swift": [
@@ -260,7 +301,11 @@ body[data-color-scheme="dark"] {
       return null;
     }
 
-    return document.getElementById(id);
+    return document.getElementById(id)
+      || sections().find(function (section) {
+        return encodeURIComponent(section.id) === hash.replace(/^#/, "");
+      })
+      || null;
   }
 
   function scrollToSection(section) {
@@ -277,11 +322,35 @@ body[data-color-scheme="dark"] {
     return true;
   }
 
-  function scrollFromCurrentHash() {
-    window.requestAnimationFrame(function () {
-      scrollToSection(sectionForHash(window.location.hash));
+  function scheduleSectionScroll(hash) {
+    const targetHash = hash || window.location.hash;
+    const delays = [0, 50, 150, 300, 600, 1000];
+
+    delays.forEach(function (delay) {
+      window.setTimeout(function () {
+        window.requestAnimationFrame(function () {
+          scrollToSection(sectionForHash(targetHash));
+        });
+      }, delay);
     });
   }
+
+  function scrollFromCurrentHash() {
+    scheduleSectionScroll(window.location.hash);
+  }
+
+  function patchHistoryMethod(name) {
+    const original = history[name];
+
+    history[name] = function () {
+      const result = original.apply(this, arguments);
+      scheduleSectionScroll(window.location.hash);
+      return result;
+    };
+  }
+
+  patchHistoryMethod("pushState");
+  patchHistoryMethod("replaceState");
 
   window.addEventListener("hashchange", scrollFromCurrentHash);
   window.addEventListener("popstate", scrollFromCurrentHash);
@@ -327,13 +396,11 @@ body[data-color-scheme="dark"] {
       history.pushState(null, "", hash);
     }
 
-    window.setTimeout(function () {
-      scrollToSection(section);
-    }, 0);
+    scheduleSectionScroll(hash);
   }, true);
 
   if (window.location.hash) {
-    window.setTimeout(scrollFromCurrentHash, 250);
+    scheduleSectionScroll(window.location.hash);
   }
 }());
 `, "utf8");
