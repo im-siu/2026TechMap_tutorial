@@ -13,6 +13,8 @@ DOCC="${DOCC:-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault
   --warnings-as-errors \
   --output-path "$OUTPUT_PATH"
 
+node scripts/normalize-docc-section-links.mjs "$OUTPUT_PATH"
+
 touch "$OUTPUT_PATH/.nojekyll"
 
 echo "Built DocC site at ${OUTPUT_PATH}"

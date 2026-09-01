@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "docs/HandJutsu.docc/**"
+      - "scripts/**"
       - ".github/workflows/deploy-docc-pages.yml"
 
 permissions:
@@ -44,6 +45,8 @@ jobs:
             --hosting-base-path "/${{ github.event.repository.name }}" \
             --warnings-as-errors \
             --output-path "$OUTPUT_PATH"
+
+          node scripts/normalize-docc-section-links.mjs "$OUTPUT_PATH"
 
           touch "$OUTPUT_PATH/.nojekyll"
 
