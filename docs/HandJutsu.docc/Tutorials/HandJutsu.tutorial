@@ -9,5 +9,6 @@
         @Image(source: hand-jutsu-overview.svg, alt: "양손 관절 데이터가 Hand Jutsu 튜토리얼 흐름으로 이어지는 개념 이미지")
 
         @TutorialReference(tutorial: "doc:02-Creating-Immersive-Space")
+        @TutorialReference(tutorial: "doc:03-Starting-Hand-Tracking")
     }
 }
