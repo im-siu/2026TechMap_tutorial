@@ -25,6 +25,25 @@ const highlightLinesByFile = {
   "04-04-HandTrackingService.swift": [10, 23, 24],
   "04-05-HandJointVisualizer.swift": range(5, 85),
   "04-06-ImmersiveView.swift": [6, 10, 11, 12],
+  "05-01-HandJointPositionSample.swift": range(4, 18),
+  "05-02-HandPoseFeature.swift": range(4, 31),
+  "05-03-HandPoseFeatureBuilder.swift": [
+    ...range(4, 33),
+    ...range(35, 45),
+    ...range(48, 56),
+    ...range(59, 64),
+    ...range(68, 82),
+  ],
+  "05-04-HandTrackingSnapshot.swift": [
+    ...range(7, 12),
+    ...range(15, 18),
+    25,
+    ...range(38, 53),
+  ],
+  "05-05-ContentView.swift": [
+    ...range(26, 33),
+    ...range(40, 61),
+  ],
 };
 
 function range(start, end) {

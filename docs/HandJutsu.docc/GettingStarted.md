@@ -86,4 +86,4 @@ Apple Vision Pro에서 확인해야 하는 범위는 다음과 같다.
 - Apple Vision Pro에서 확인해야 하는 범위
 - 2장부터 5장까지 이어지는 학습 흐름
 
-다음 장에서는 <doc:02-Creating-Immersive-Space>에서 Window와 Immersive Space를 구성한다. 이어서 <doc:03-Starting-Hand-Tracking>에서 양손 추적 입력을 시작하고, <doc:04-Visualizing-Hand-Joints>에서 관절 위치를 공간에 그린다.
+다음 장에서는 <doc:02-Creating-Immersive-Space>에서 Window와 Immersive Space를 구성한다. 이어서 <doc:03-Starting-Hand-Tracking>에서 양손 추적 입력을 시작하고, <doc:04-Visualizing-Hand-Joints>에서 관절 위치를 공간에 그린 뒤, <doc:05-Building-Pose-Features>에서 위치 데이터를 Pose Features 입력으로 바꾼다.
