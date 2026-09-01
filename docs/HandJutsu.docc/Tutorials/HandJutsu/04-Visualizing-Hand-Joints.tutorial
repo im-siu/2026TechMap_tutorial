@@ -117,7 +117,7 @@
 
             Apple Vision Pro 실기기에서는 손 추적 권한을 허용한 뒤 왼손과 오른손 관절 구체가 손의 이동과 회전을 따라오는지 확인한다. 빠른 움직임이나 손 가림에서 구체가 남거나 튀는지도 관찰한다.
 
-            5장에서는 4장에서 사용한 `originFromJointTransform`의 translation을 꺼내 `SIMD3<Float>` 위치 값으로 바꾸고, Pose Features 입력으로 연결한다.
+            5장에서는 4장에서 사용한 `originFromJointTransform`의 translation을 꺼내 `SIMD3<Float>` 위치 값으로 바꾸고, <doc:05-Building-Pose-Features>에서 Pose Features 입력으로 연결한다.
         }
 
         @Steps {

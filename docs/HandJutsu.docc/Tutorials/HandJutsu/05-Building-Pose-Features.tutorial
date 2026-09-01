@@ -1,0 +1,105 @@
+@Tutorial(time: 25) {
+    @Intro(title: "관절 위치를 Pose Feature로 바꾸기") {
+        4장에서 만든 관절 월드 transform을 손 모양 판정에 사용할 수 있는 위치 feature로 바꾼다.
+
+        이 튜토리얼에서는 제스처 이름을 판정하지 않는다. 먼저 transform에서 위치만 꺼내고, 손목을 기준으로 상대 좌표를 만든 뒤, 다음 장의 판정 로직이 사용할 입력 구조를 준비한다.
+    }
+
+    @Section(title: "transform에서 위치 꺼내기") {
+        @ContentAndMedia {
+            4장의 `HandJointSample`은 관절의 전체 transform을 담았다. RealityKit에 구체를 그릴 때는 회전과 위치가 모두 필요하지만, 손 모양을 비교할 때는 먼저 관절 위치가 필요하다.
+
+            `simd_float4x4`의 네 번째 column에는 translation이 들어 있다. `columns.3`에서 `x`, `y`, `z`만 꺼내면 월드 공간 기준 `SIMD3<Float>` 위치가 된다.
+        }
+
+        @Steps {
+            @Step {
+                `HandJointPositionSample`을 만들고, `HandJointSample.originFromJointTransform`에서 위치 값을 추출한다.
+
+                @Code(name: "HandJointPositionSample.swift", file: "05-01-HandJointPositionSample.swift")
+            }
+        }
+    }
+
+    @Section(title: "한 손의 feature 모델 만들기") {
+        @ContentAndMedia {
+            제스처 판정은 관절 하나가 아니라 한 손의 여러 관절 위치를 함께 본다.
+
+            `HandPoseFeature`는 손 방향, 기준 관절, 상대 좌표로 바꾼 관절 위치, 누락된 관절 목록을 한곳에 담는다. 이 구조를 만들면 다음 장에서 제스처 판정 함수가 ARKit transform 대신 순수한 위치 데이터를 입력으로 받을 수 있다.
+        }
+
+        @Steps {
+            @Step {
+                한 손의 pose feature와 디버그용 거리 값을 표현하는 타입을 추가한다.
+
+                @Code(name: "HandPoseFeature.swift", file: "05-02-HandPoseFeature.swift")
+            }
+        }
+    }
+
+    @Section(title: "필수 관절과 기준점 정하기") {
+        @ContentAndMedia {
+            4장에서는 팔뚝 관절까지 포함해 시각화했다. 하지만 손 모양 판정의 시작점으로는 손목과 손가락 관절 25개를 먼저 사용한다.
+
+            월드 좌표를 그대로 비교하면 손이 공간 어디에 있느냐에 따라 값이 달라진다. 그래서 `wrist`를 기준 관절로 정하고, 각 관절 위치에서 손목 위치를 빼 상대 좌표를 만든다.
+        }
+
+        @Steps {
+            @Step {
+                `HandPoseFeatureBuilder`에서 필수 관절 목록을 정하고, 관절 위치를 손목 기준 상대 좌표로 변환한다.
+
+                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-03-HandPoseFeatureBuilder.swift")
+            }
+        }
+    }
+
+    @Section(title: "snapshot에서 feature 만들기") {
+        @ContentAndMedia {
+            4장의 `HandTrackingSnapshot`은 이미 왼손과 오른손의 관절 샘플을 나누어 담고 있다.
+
+            여기에 왼손과 오른손 feature를 꺼내는 computed property를 추가하면, 화면이나 다음 장의 판정 로직은 snapshot에서 바로 위치 feature를 가져올 수 있다.
+        }
+
+        @Steps {
+            @Step {
+                `HandTrackingSnapshot`에 좌우 손 pose feature를 만드는 연결 지점을 추가한다.
+
+                @Code(name: "HandTrackingSnapshot.swift", file: "05-04-HandTrackingSnapshot.swift")
+            }
+        }
+    }
+
+    @Section(title: "Window에서 feature 확인하기") {
+        @ContentAndMedia {
+            Simulator에서는 실제 손 입력이 들어오지 않는다. 그래도 코드 구조와 문서 빌드는 확인할 수 있고, Apple Vision Pro에서는 현재 feature 개수와 주요 거리 값이 손 움직임에 따라 변하는지 볼 수 있다.
+
+            이번 장에서는 엄지 끝과 검지 끝 사이 거리를 대표 디버그 값으로 보여준다. 이 값은 다음 장에서 핀치나 손가락 간 거리 기반 판정으로 이어질 수 있다.
+        }
+
+        @Steps {
+            @Step {
+                `ContentView`에서 좌우 손 feature 개수, 누락 관절 수, 엄지와 검지 끝 사이 거리를 표시한다.
+
+                @Code(name: "ContentView.swift", file: "05-05-ContentView.swift")
+            }
+        }
+    }
+
+    @Section(title: "확인하고 다음 장으로 이어가기") {
+        @ContentAndMedia {
+            5장을 마치면 관절 transform은 시각화용 행렬에서 판정용 위치 feature로 바뀐다.
+
+            feature가 완성되려면 필수 관절이 모두 있어야 한다. 누락된 관절을 `(0, 0, 0)`으로 채우면 손목과 손끝 거리, 손가락 굽힘 정도, 손 크기 정규화 값이 모두 왜곡될 수 있으므로 이번 장에서는 누락 목록을 명시하고 feature 완성 여부를 구분한다.
+
+            6장에서는 이 입력 구조를 사용해 실제 손 모양을 판정한다.
+        }
+
+        @Steps {
+            @Step {
+                실기기에서 feature 완성 여부와 주요 거리 값이 실제 손 움직임과 맞게 변하는지 확인한다.
+
+                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-03-HandPoseFeatureBuilder.swift")
+            }
+        }
+    }
+}
