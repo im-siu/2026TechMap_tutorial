@@ -95,7 +95,7 @@
         @ContentAndMedia {
             이 장을 마치면 `ARKitSession`과 `HandTrackingProvider`가 어디에서 시작되는지, 왼손과 오른손 Anchor를 어떻게 나누는지 설명할 수 있어야 한다.
 
-            아직 관절 위치를 공간에 그리지는 않았다. 다음 장에서는 `HandAnchor`와 joint transform을 사용해 손 관절을 RealityKit Entity로 시각화한다.
+            아직 관절 위치를 공간에 그리지는 않았다. 다음 장인 <doc:04-Visualizing-Hand-Joints>에서는 `HandAnchor`와 joint transform을 사용해 손 관절을 RealityKit Entity로 시각화한다.
         }
 
         @Steps {
