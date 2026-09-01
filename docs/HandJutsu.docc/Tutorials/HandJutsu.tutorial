@@ -10,5 +10,6 @@
 
         @TutorialReference(tutorial: "doc:02-Creating-Immersive-Space")
         @TutorialReference(tutorial: "doc:03-Starting-Hand-Tracking")
+        @TutorialReference(tutorial: "doc:04-Visualizing-Hand-Joints")
     }
 }
