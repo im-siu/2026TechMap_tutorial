@@ -19,10 +19,6 @@ final class HandTrackingService {
         do {
             try await session.run([provider])
             statusMessage = "Hand Tracking is running."
-
-            for await update in provider.anchorUpdates {
-                snapshot.update(with: update.anchor)
-            }
         } catch {
             statusMessage = "Failed to start Hand Tracking: \(error.localizedDescription)"
         }

@@ -104,7 +104,7 @@
             @Step {
                 실기기에서 feature 완성 여부와 주요 거리 값이 실제 손 움직임과 맞게 변하는지 확인한다.
 
-                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-06-HandPoseFeatureBuilder-Policy.swift")
+                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-06-HandPoseFeatureBuilder-Verification.swift")
             }
         }
     }

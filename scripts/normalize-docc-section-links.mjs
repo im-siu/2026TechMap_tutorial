@@ -51,14 +51,17 @@ const highlightLinesByFile = {
   ],
   "04-05-HandJointVisualizer-Root.swift": range(5, 13),
   "04-05-HandJointVisualizer-Entities.swift": [
-    ...range(21, 38),
-    ...range(75, 83),
+    13,
+    ...range(16, 45),
   ],
   "04-06-HandJointVisualizer-Apply.swift": [
     ...range(16, 18),
-    ...range(41, 57),
+    ...range(41, 54),
   ],
   "04-07-HandJointVisualizer-HideMissing.swift": [
+    43,
+    47,
+    56,
     ...range(59, 62),
     ...range(65, 72),
   ],
@@ -81,10 +84,6 @@ const highlightLinesByFile = {
   "05-05-ContentView.swift": [
     ...range(26, 33),
     ...range(40, 61),
-  ],
-  "05-06-HandPoseFeatureBuilder-Policy.swift": [
-    ...range(39, 45),
-    ...range(55, 64),
   ],
 };
 

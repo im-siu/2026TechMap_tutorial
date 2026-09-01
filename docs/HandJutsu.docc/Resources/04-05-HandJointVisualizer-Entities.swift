@@ -13,11 +13,6 @@ final class HandJointVisualizer {
         createJointEntities()
     }
 
-    func apply(_ snapshot: HandTrackingSnapshot) {
-        apply(hand: snapshot.left, side: .left)
-        apply(hand: snapshot.right, side: .right)
-    }
-
     private func createJointEntities() {
         for side in HandSide.allCases {
             var sideEntities: [HandSkeleton.JointName: ModelEntity] = [:]
@@ -35,40 +30,6 @@ final class HandJointVisualizer {
             }
 
             jointEntities[side] = sideEntities
-        }
-    }
-
-    private func apply(hand: HandTrackingSnapshot.HandState, side: HandSide) {
-        guard hand.isTracked else {
-            setJointEntitiesEnabled(false, for: side)
-            return
-        }
-
-        var visibleJointNames = Set<HandSkeleton.JointName>()
-
-        for joint in hand.joints {
-            guard let entity = jointEntities[side]?[joint.name] else {
-                continue
-            }
-
-            entity.setTransformMatrix(joint.originFromJointTransform, relativeTo: nil)
-            entity.isEnabled = true
-            visibleJointNames.insert(joint.name)
-        }
-
-        for (jointName, entity) in jointEntities[side] ?? [:]
-        where !visibleJointNames.contains(jointName) {
-            entity.isEnabled = false
-        }
-    }
-
-    private func setJointEntitiesEnabled(_ isEnabled: Bool, for side: HandSide) {
-        guard let entities = jointEntities[side]?.values else {
-            return
-        }
-
-        for entity in entities {
-            entity.isEnabled = isEnabled
         }
     }
 
