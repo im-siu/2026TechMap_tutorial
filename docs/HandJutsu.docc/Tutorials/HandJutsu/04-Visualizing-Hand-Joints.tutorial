@@ -1,49 +1,49 @@
 @Tutorial(time: 25) {
-    @Intro(title: "관절을 공간에 그리기") {
-        3장에서 시작한 Hand Tracking 흐름을 확장해 왼손과 오른손의 관절 위치를 Immersive Space 안에 표시한다.
+    @Intro(title: "관절 추적 상태 확인하기") {
+        3장에서 받은 Hand Tracking 데이터를 사용해 왼손과 오른손의 관절 위치를 Immersive Space 안에서 관찰한다.
 
-        이 튜토리얼에서는 손 모양을 판정하지 않는다. 먼저 `HandAnchor`와 `HandSkeleton.Joint`의 transform을 월드 공간 기준으로 바꾸고, 그 위치를 RealityKit 구체로 확인한다.
+        이 장의 구체는 최종 손동작 기능이 아니라 디버그 도구다. `HandAnchor`와 `HandSkeleton.Joint`의 transform을 월드 공간 기준으로 바꾼 뒤, 어느 관절이 안정적으로 추적되는지 눈으로 확인한다. 손 모양을 판정하는 로직은 아직 만들지 않는다.
     }
 
-    @Section(title: "관절 샘플 모델 만들기") {
+    @Section(title: "관절 데이터를 담을 새 파일 만들기") {
         @ContentAndMedia {
-            3장의 snapshot은 손이 추적 중인지와 skeleton이 있는지만 담았다.
+            3장의 snapshot은 손이 추적 중인지와 skeleton이 있는지만 담았다. 이제 관절 하나의 이름과 위치를 전달할 데이터가 필요하다.
 
-            4장에서는 각 관절의 이름과 월드 transform을 담는 `HandJointSample`을 추가한다. 왼손과 오른손은 이후 시각화 단계에서 서로 다른 색으로 표시하므로, 손 방향을 표현하는 작은 타입도 함께 둔다.
+            새 Swift 파일 `HandJointSample.swift`를 만들고, 각 관절의 이름과 월드 transform을 담는 `HandJointSample`을 추가한다. 왼손과 오른손을 구분할 `HandSide`도 함께 정의한다.
         }
 
         @Steps {
             @Step {
-                `HandJointSample`과 `HandSide`를 만들고, 관절 이름과 월드 transform을 함께 전달할 수 있게 한다.
+                새 파일에 `HandJointSample`과 `HandSide`를 만들고, 관절 이름과 월드 transform을 함께 전달할 수 있게 한다.
 
                 @Code(name: "HandJointSample.swift", file: "04-01-HandJointSample.swift")
             }
         }
     }
 
-    @Section(title: "그릴 관절 목록 정하기") {
+    @Section(title: "관찰할 관절 목록 정하기") {
         @ContentAndMedia {
-            `HandSkeleton`에는 여러 관절이 들어 있다. 튜토리얼에서는 같은 순서로 관절을 순회할 수 있도록 관절 목록을 한곳에 모은다.
+            `HandSkeleton`에는 손목, 손가락 마디, 손끝처럼 여러 관절이 들어 있다. 이 장에서는 손 전체가 어떻게 추적되는지 확인해야 하므로 관찰할 관절을 한 목록에 모은다.
 
-            이 목록은 4장에서 관절 구체를 만들 때도 쓰고, 5장에서 Pose Features 입력을 준비할 때도 기준이 된다.
+            긴 목록을 직접 적는 이유는 모든 손가락과 손목이 실제로 들어오는지 같은 순서로 확인하기 위해서다. 최종 손동작 판정에서는 이 목록 전체를 필수로 쓰지 않고, 목표 동작에 필요한 관절만 따로 선택한다.
         }
 
         @Steps {
             @Step {
-                `HandJointCatalog`를 만들고, 시각화할 관절 이름을 배열로 정리한다.
+                `HandJointCatalog`를 만들고, 디버그 화면에서 관찰할 관절 이름을 배열로 정리한다.
 
                 @Code(name: "HandJointCatalog.swift", file: "04-02-HandJointCatalog.swift")
             }
         }
     }
 
-    @Section(title: "관절 transform을 월드 공간으로 바꾸기") {
+    @Section(title: "추적된 관절을 월드 공간으로 바꾸기") {
         @ContentAndMedia {
             `HandAnchor.originFromAnchorTransform`은 손 Anchor를 월드 원점 기준으로 표현한다. `Joint.anchorFromJointTransform`은 관절을 손 Anchor 기준으로 표현한다.
 
             RealityKit 장면에 관절을 그리려면 두 transform을 `originFromAnchorTransform * anchorFromJointTransform` 순서로 곱해 `originFromJointTransform`을 만든다.
 
-            `Joint.isTracked`가 `false`인 관절은 이번 장의 시각화 대상에서 제외한다. 가려진 관절의 추정 transform을 사용할지는 실기기 관찰 뒤 다시 결정한다.
+            `Joint.isTracked`가 `false`이면 ARKit이 현재 신뢰할 수 있는 관절 transform을 제공하지 않는 상태다. 이 장에서는 이전 위치를 추정해 남겨 두지 않고, 추적된 관절만 샘플에 담아 관찰한다.
         }
 
         @Steps {
@@ -61,45 +61,57 @@
         }
     }
 
-    @Section(title: "관절 Entity 미리 만들기") {
+    @Section(title: "관절 구체로 디버그 화면 만들기") {
         @ContentAndMedia {
-            관절 update가 들어올 때마다 구체를 새로 만들면 장면 트리가 계속 바뀐다.
+            관절 구체는 추적 상태를 눈으로 확인하기 위한 선택적 디버그 화면이다. 실제 손동작 판정만 구현하려면 이 단계를 건너뛸 수 있지만, 처음에는 관절 데이터가 기대한 위치에 들어오는지 확인하는 편이 좋다.
 
-            `HandJointVisualizer`는 시작할 때 왼손과 오른손의 관절 Entity를 한 번 만들고 숨겨 둔다. 이후 snapshot이 들어오면 같은 Entity의 transform과 표시 상태만 갱신한다.
+            관절 update가 들어올 때마다 구체를 새로 만들면 장면 트리가 계속 바뀐다. `HandJointVisualizer`는 시작할 때 왼손과 오른손의 관절 Entity를 한 번 만들고 숨겨 둔 뒤, snapshot이 들어오면 같은 Entity의 위치와 표시 상태만 갱신한다.
         }
 
         @Steps {
             @Step {
+                `HandJointVisualizer`에 관절 Entity를 담을 root와 조회 테이블을 준비한다.
+
+                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer-Root.swift")
+            }
+
+            @Step {
                 왼손 관절은 파란 구체, 오른손 관절은 분홍 구체로 만들고 `rootEntity` 아래에 모은다.
 
-                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer.swift")
+                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer-Entities.swift")
             }
         }
     }
 
-    @Section(title: "snapshot을 장면에 반영하기") {
+    @Section(title: "관절 상태를 장면에 반영하기") {
         @ContentAndMedia {
             추적 중인 관절은 `setTransformMatrix(_:relativeTo:)`로 월드 transform을 적용한다.
 
             `relativeTo`에 `nil`을 전달하면 RealityKit은 transform을 월드 공간 기준으로 해석한다. 앞 단계에서 이미 월드 transform을 만들었으므로 부모 Entity 기준 변환을 다시 하지 않는다.
 
-            현재 snapshot에 없는 관절이나 추적되지 않는 손은 숨긴다. 이렇게 해야 추적이 끊긴 뒤 이전 관절 구체가 공간에 남아 보이지 않는다.
+            현재 snapshot에 없는 관절이나 추적되지 않는 손은 숨긴다. 이렇게 하면 추적이 끊긴 뒤의 오래된 구체가 공간에 남아, 아직 신뢰할 수 있는 관절처럼 보이는 일을 막을 수 있다.
         }
 
         @Steps {
             @Step {
                 `HandJointVisualizer.apply(_:)`에서 snapshot의 좌우 손을 각각 적용한다.
 
-                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer.swift")
+                @Code(name: "HandJointVisualizer.swift", file: "04-06-HandJointVisualizer-Apply.swift")
+            }
+
+            @Step {
+                현재 snapshot에 없는 관절이나 추적되지 않는 손은 화면에 남지 않도록 숨긴다. 이는 디버그 화면의 표시 정책이며, 실제 손동작 인식에서는 필요한 관절이 없을 때 `불확실` 상태로 두거나 후보 동작을 취소하는 별도 정책을 적용한다.
+
+                @Code(name: "HandJointVisualizer.swift", file: "04-07-HandJointVisualizer-HideMissing.swift")
             }
         }
     }
 
-    @Section(title: "Immersive View에 연결하기") {
+    @Section(title: "Immersive View에 디버그 화면 연결하기") {
         @ContentAndMedia {
             `ImmersiveView`는 visualizer의 `rootEntity`를 RealityKit 장면에 한 번 추가한다.
 
-            SwiftUI가 `handTracking.snapshot` 변화를 반영할 때마다 visualizer에 snapshot을 전달해 관절 Entity의 위치와 표시 상태를 갱신한다.
+            SwiftUI가 `handTracking.snapshot` 변화를 반영할 때마다 visualizer에 snapshot을 전달해 관절 Entity의 위치와 표시 상태를 갱신한다. 이 연결은 추적 데이터를 눈으로 검증할 때만 필요하다.
         }
 
         @Steps {
@@ -111,20 +123,20 @@
         }
     }
 
-    @Section(title: "확인하고 다음 장으로 이어가기") {
+    @Section(title: "실기기에서 추적 상태 관찰하기") {
         @ContentAndMedia {
-            Simulator에서는 실제 손 입력을 받을 수 없으므로 DocC 빌드와 코드 구조를 중심으로 확인한다.
+            Simulator에서는 실제 손 입력을 받을 수 없으므로 DocC 빌드와 코드 구조를 확인한다. 실제 관절 위치와 추적 안정성은 Apple Vision Pro에서 검증한다.
 
-            Apple Vision Pro 실기기에서는 손 추적 권한을 허용한 뒤 왼손과 오른손 관절 구체가 손의 이동과 회전을 따라오는지 확인한다. 빠른 움직임이나 손 가림에서 구체가 남거나 튀는지도 관찰한다.
+            손 추적 권한을 허용한 뒤 손을 펴고, 손가락을 접고, 한쪽 손이나 손가락 일부를 가려 본다. 왼손과 오른손의 구체가 손의 이동과 회전을 따라오는지, 추적되지 않는 관절의 구체가 사라지는지, 다시 보였을 때 올바른 위치로 돌아오는지를 관찰한다.
 
-            5장에서는 4장에서 사용한 `originFromJointTransform`의 translation을 꺼내 `SIMD3<Float>` 위치 값으로 바꾸고, <doc:05-Building-Pose-Features>에서 Pose Features 입력으로 연결한다.
+            이 관찰 결과는 다음 단계에서 손동작 판정에 필요한 관절과 허용 오차를 정하는 근거가 된다. 디버그 구체는 유지해 두고, 실제 판정에서는 필요한 관절만 사용한다.
         }
 
         @Steps {
             @Step {
-                실기기에서 확인한 동작과 아직 확인하지 못한 동작을 구분해 기록한다.
+                손 전체, 손가락 일부 가림, 빠른 움직임에서 관절 구체가 어떻게 보이는지 확인한다.
 
-                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer.swift")
+                @Code(name: "HandJointVisualizer.swift", file: "04-08-HandJointVisualizer-Verification.swift")
             }
         }
     }
