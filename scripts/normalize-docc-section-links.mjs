@@ -85,6 +85,13 @@ const highlightLinesByFile = {
     ...range(26, 33),
     ...range(40, 61),
   ],
+  "05-01-PoseFeatureModels.swift": range(1, 44),
+  "05-02-BilateralPinchPose.swift": range(3, 18),
+  "05-03-BilateralPinchPose-Feature.swift": range(15, 69),
+  "05-04-BilateralPinchPose-Evaluation.swift": range(1, 39),
+  "05-05-HandTrackingPoseFeatureAdapter.swift": range(4, 37),
+  "05-06-PoseFeatureVerificationRecord.swift": range(4, 19),
+  "05-07-BilateralPinchPoseTests.swift": range(4, 45),
 };
 
 function range(start, end) {
