@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct HandJutsuApp: App {
     @State private var handTracking = HandTrackingService()
+    @State private var immersionStyle: ImmersionStyle = .full
 
     var body: some Scene {
         WindowGroup {
@@ -12,5 +13,6 @@ struct HandJutsuApp: App {
         ImmersiveSpace(id: AppSpace.handJutsu) {
             ImmersiveView(handTracking: handTracking)
         }
+        .immersionStyle(selection: $immersionStyle, in: .full)
     }
 }

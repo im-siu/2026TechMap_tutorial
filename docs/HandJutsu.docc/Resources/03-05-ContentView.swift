@@ -14,7 +14,7 @@ struct ContentView: View {
                 .font(.largeTitle)
 
             VStack(alignment: .leading, spacing: 8) {
-                Text(handTracking.statusMessage)
+                Text(handTracking.status.message)
                 Text("Left hand: \(label(for: handTracking.snapshot.left))")
                 Text("Right hand: \(label(for: handTracking.snapshot.right))")
             }

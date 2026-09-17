@@ -2,14 +2,32 @@
     @Intro(title: "양손 Hand Tracking 시작하기") {
         2장에서 만든 Immersive Space 안에서 `ARKitSession`과 `HandTrackingProvider`를 시작한다.
 
-        이 튜토리얼에서는 관절을 그리거나 포즈를 판정하지 않는다. 먼저 왼손과 오른손이 추적 중인지 안전하게 받아오는 최소 흐름을 만든다.
+        이 튜토리얼에서는 관절을 그리거나 포즈를 판정하지 않는다. 먼저 권한을 확인한 뒤, 왼손과 오른손이 추적 중인지 안전하게 받아오는 최소 흐름을 만든다.
+    }
+
+    @Section(title: "손 추적 권한 준비하기") {
+        @ContentAndMedia {
+            Hand Tracking은 사용자의 손 데이터를 사용하므로, 코드를 실행하기 전에 target 설정과 사용 목적 문구가 필요하다.
+
+            Xcode에서 app target을 선택한 뒤 **Signing & Capabilities**에서 **Hand Tracking** capability를 추가한다. 이어서 target의 **Info** 탭에서 `Privacy - Hand Tracking Usage Description` 항목을 추가한다. 이 문구는 Apple Vision Pro가 권한을 요청할 때 사용자에게 보인다.
+
+            이 설정은 권한을 자동으로 허용하지 않는다. 아래 Step에서 앱이 현재 권한을 조회하고, 처음인 경우에만 요청한다.
+        }
+
+        @Steps {
+            @Step {
+                target의 Info 설정에 아래 키와 사용 목적 문구를 추가한다. 문구는 앱이 실제로 손 데이터를 사용하는 이유를 설명해야 한다.
+
+                @Code(name: "Info.plist", file: "03-02-Info.plist")
+            }
+        }
     }
 
     @Section(title: "추적 상태 모델 만들기") {
         @ContentAndMedia {
             Hand Tracking 입력은 매 프레임 바뀐다. SwiftUI 화면과 RealityKit 장면이 이 값을 직접 해석하게 만들기보다, 현재 상태를 담는 작은 타입을 먼저 만든다.
 
-            이번 장에서는 왼손과 오른손이 추적 중인지, 각 손의 skeleton을 사용할 수 있는지만 표시한다. 관절 위치 계산은 다음 장에서 다룬다.
+            `HandTrackingSnapshot`은 왼손·오른손의 추적 상태와 skeleton 사용 가능 여부를 담는다. `HandTrackingService`는 권한·Session·Provider를 관리한다. 관절 위치 계산은 다음 장에서 다룬다.
         }
 
         @Steps {
@@ -25,12 +43,14 @@
         @ContentAndMedia {
             `ARKitSession`과 `HandTrackingProvider`의 생명주기는 `ImmersiveView`에 길게 작성하지 않고 `HandTrackingService`로 분리한다.
 
-            이렇게 하면 `ImmersiveView`는 공간 장면을 만들고, `HandTrackingService`는 손 추적 입력을 관리한다. 이후 관절 시각화와 Pose Features 계산을 붙일 때도 책임이 섞이지 않는다.
+            이렇게 하면 `ImmersiveView`는 공간 장면을 만들고, `HandTrackingService`는 손 추적 입력을 관리한다. Service는 지원 여부를 확인하고, `queryAuthorization(for:)`으로 현재 권한을 읽는다. 권한이 아직 결정되지 않았을 때만 `requestAuthorization(for:)`을 호출하고, 허용된 경우에만 Session을 실행한다.
+
+            사용자가 권한을 허용하지 않거나 실행 중 오류가 나면, Service는 이유가 담긴 상태를 Window에 전달한다. 오류나 거부를 손이 없는 상태로 숨기지 않는 이유는 학습자가 설정 문제와 실제 추적 상태를 구분할 수 있게 하기 위해서다.
         }
 
         @Steps {
             @Step {
-                `HandTrackingProvider.isSupported`를 먼저 확인하고, 지원되는 기기에서만 `ARKitSession`을 실행한다.
+                새 `HandTrackingService.swift` 파일을 만들고, 지원 여부·권한 조회·권한 요청·Session 실행을 순서대로 넣는다. 권한이 허용되지 않으면 `session.run`을 호출하지 않는다.
 
                 @Code(name: "HandTrackingService.swift", file: "03-02-HandTrackingService.swift")
             }
@@ -46,7 +66,7 @@
 
         @Steps {
             @Step {
-                Anchor update를 순회하면서 `chirality`에 따라 왼손과 오른손 상태를 갱신한다.
+                같은 `HandTrackingService.swift`에서 Session 실행 뒤 anchor update를 순회한다. `chirality`에 따라 Snapshot의 왼손·오른손 상태를 갱신한다.
 
                 @Code(name: "HandTrackingService.swift", file: "03-03-HandTrackingService-Updates.swift")
             }
@@ -55,20 +75,22 @@
 
     @Section(title: "Immersive Space에서 시작하기") {
         @ContentAndMedia {
-            손 추적은 Immersive Space가 열렸을 때 시작하고, View가 사라질 때 작업을 취소한다.
+            손 추적은 Immersive Space가 열렸을 때 시작한다. 이 순서는 2장에서 등록만 했던 Space가 실제로 열린 뒤에 권한과 Session을 처리하게 한다.
+
+            Hand Tracking 데이터는 Full Space에서만 사용할 수 있으므로, 이 장에서는 Space를 `.full` immersion style로 설정한다. Space가 닫히면 Session도 즉시 멈추고 화면 상태를 초기화한다.
 
             이 장의 `ImmersiveView`는 2장에서 만든 root entity를 유지하면서 `HandTrackingService`를 상태 객체로 가지고, service가 전달하는 snapshot을 바깥 UI로 전달한다.
         }
 
         @Steps {
             @Step {
-                `ImmersiveView`에서 Hand Tracking service를 만들고, `.task`에서 손 추적을 시작한다.
+                기존 `ImmersiveView.swift`를 아래 코드로 교체한다. `.task`에서 Hand Tracking service를 시작하고, Space가 사라지면 `.onDisappear`에서 Session을 멈춘다.
 
                 @Code(name: "ImmersiveView.swift", file: "03-03-ImmersiveView.swift")
             }
 
             @Step {
-                App 진입점에서 같은 `HandTrackingService`를 `ContentView`와 `ImmersiveView`에 전달한다.
+                기존 `HandJutsuApp.swift`를 아래 코드로 교체해 같은 `HandTrackingService`를 Window와 Immersive Space에 전달하고, Immersive Space를 Full Space로 설정한다.
 
                 @Code(name: "HandJutsuApp.swift", file: "03-04-HandJutsuApp.swift")
             }
@@ -77,14 +99,14 @@
 
     @Section(title: "Window에서 상태 확인하기") {
         @ContentAndMedia {
-            3장의 확인 화면은 단순해야 한다. 학습자는 지금 손이 추적 중인지, skeleton까지 들어오는지만 확인하면 된다.
+            3장의 확인 화면은 단순해야 한다. 학습자는 권한 요청·거부·실행 상태와 왼손·오른손의 추적 상태를 구분할 수 있어야 한다.
 
-            Simulator에서는 실제 손 입력을 받을 수 없으므로 코드 구조와 화면 상태를 중심으로 확인한다. Apple Vision Pro 실기기에서는 권한 프롬프트, 왼손과 오른손 추적 상태, 손을 내렸을 때 상태가 바뀌는지를 확인한다.
+            Simulator에서는 실제 Hand Anchor가 들어오지 않으므로, Window의 상태 UI와 Space 열기 흐름을 확인한다. Apple Vision Pro에서는 권한 프롬프트, 허용 또는 거부 결과, 양손 상태 변화를 확인한다.
         }
 
         @Steps {
             @Step {
-                `ContentView`에 snapshot 상태를 표시하고, Immersive Space를 열 때 `ImmersiveView`가 이 값을 갱신하도록 연결한다.
+                기존 `ContentView.swift`를 아래 코드로 교체한다. Service의 상태 메시지와 Snapshot을 함께 표시해, 권한 문제와 손이 아직 추적되지 않은 상태를 구분한다.
 
                 @Code(name: "ContentView.swift", file: "03-05-ContentView.swift")
             }
@@ -95,12 +117,18 @@
         @ContentAndMedia {
             이 장을 마치면 `ARKitSession`과 `HandTrackingProvider`가 어디에서 시작되는지, 왼손과 오른손 Anchor를 어떻게 나누는지 설명할 수 있어야 한다.
 
+            Simulator에서는 Window가 열리고 권한·Session 상태가 표시되는 흐름을 확인한다. Apple Vision Pro에서는 아래 세 가지 화면 상태를 순서대로 확인한다.
+
+            1. 처음 Space를 열었을 때 권한 요청이 보인다.
+            2. 권한을 허용하지 않으면 Window에 권한이 허용되지 않았다는 메시지가 보인다.
+            3. 권한을 허용하면 실행 메시지와 왼손·오른손 상태가 보이고, 손을 내리면 해당 손이 `not tracked`로 바뀐다.
+
             아직 관절 위치를 공간에 그리지는 않았다. 다음 장인 <doc:04-Visualizing-Hand-Joints>에서는 `HandAnchor`와 joint transform을 사용해 손 관절을 RealityKit Entity로 시각화한다.
         }
 
         @Steps {
             @Step {
-                Apple Vision Pro 실기기에서 양손 상태가 바뀌는지 확인하고, 실기기에서 확인하지 못한 항목은 검증 기록에 남긴다.
+                Apple Vision Pro에서 권한 허용·거부와 양손 상태 변화를 각각 확인한다. `ImmersiveView`의 `.task`는 Space가 닫힐 때 자동으로 취소되고, `.onDisappear`가 `session.stop()`과 화면 상태 초기화를 담당한다. Simulator는 실제 손 입력 대신 UI 흐름을 확인하는 데 사용한다.
 
                 @Code(name: "HandTrackingService.swift", file: "03-06-HandTrackingService-Verification.swift")
             }
