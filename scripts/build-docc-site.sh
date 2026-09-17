@@ -5,6 +5,8 @@ REPOSITORY_NAME="${REPOSITORY_NAME:-2026TechMap_tutorial}"
 OUTPUT_PATH="${OUTPUT_PATH:-/private/tmp/HandJutsuDocC}"
 DOCC="${DOCC:-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/docc}"
 
+node scripts/verify-docc-code-listings.mjs
+
 "$DOCC" convert docs/HandJutsu.docc \
   --fallback-display-name "Hand Jutsu" \
   --fallback-bundle-identifier "com.siu.HandJutsu.docs" \
