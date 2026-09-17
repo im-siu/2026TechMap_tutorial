@@ -46,9 +46,15 @@
 
         @Steps {
             @Step {
-                `HandPoseFeatureBuilder`에서 필수 관절 목록을 정하고, 관절 위치를 손목 기준 상대 좌표로 변환한다.
+                `HandPoseFeatureBuilder`에서 손 모양 판정에 사용할 필수 관절 목록을 정한다.
 
                 @Code(name: "HandPoseFeatureBuilder.swift", file: "05-03-HandPoseFeatureBuilder.swift")
+            }
+
+            @Step {
+                관절 월드 위치를 모은 뒤, 각 관절 위치에서 손목 위치를 빼 상대 좌표로 변환한다.
+
+                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-07-HandPoseFeatureBuilder-Relative.swift")
             }
         }
     }
@@ -98,7 +104,7 @@
             @Step {
                 실기기에서 feature 완성 여부와 주요 거리 값이 실제 손 움직임과 맞게 변하는지 확인한다.
 
-                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-03-HandPoseFeatureBuilder.swift")
+                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-06-HandPoseFeatureBuilder-Verification.swift")
             }
         }
     }
