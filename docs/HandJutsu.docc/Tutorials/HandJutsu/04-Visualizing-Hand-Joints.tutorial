@@ -70,9 +70,15 @@
 
         @Steps {
             @Step {
+                `HandJointVisualizer`에 관절 Entity를 담을 root와 조회 테이블을 준비한다.
+
+                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer-Root.swift")
+            }
+
+            @Step {
                 왼손 관절은 파란 구체, 오른손 관절은 분홍 구체로 만들고 `rootEntity` 아래에 모은다.
 
-                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer.swift")
+                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer-Entities.swift")
             }
         }
     }
@@ -90,7 +96,13 @@
             @Step {
                 `HandJointVisualizer.apply(_:)`에서 snapshot의 좌우 손을 각각 적용한다.
 
-                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer.swift")
+                @Code(name: "HandJointVisualizer.swift", file: "04-06-HandJointVisualizer-Apply.swift")
+            }
+
+            @Step {
+                현재 snapshot에 없는 관절이나 추적되지 않는 손은 화면에 남지 않도록 숨긴다.
+
+                @Code(name: "HandJointVisualizer.swift", file: "04-07-HandJointVisualizer-HideMissing.swift")
             }
         }
     }
@@ -124,7 +136,7 @@
             @Step {
                 실기기에서 확인한 동작과 아직 확인하지 못한 동작을 구분해 기록한다.
 
-                @Code(name: "HandJointVisualizer.swift", file: "04-05-HandJointVisualizer.swift")
+                @Code(name: "HandJointVisualizer.swift", file: "04-08-HandJointVisualizer-Verification.swift")
             }
         }
     }
