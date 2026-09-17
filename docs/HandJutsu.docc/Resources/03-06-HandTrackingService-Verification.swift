@@ -1,6 +1,32 @@
 import ARKit
 import Observation
 
+enum HandTrackingStatus {
+    case idle
+    case unsupported
+    case requestingPermission
+    case denied
+    case running
+    case failed(String)
+
+    var message: String {
+        switch self {
+        case .idle:
+            return "Open the Immersive Space to start Hand Tracking."
+        case .unsupported:
+            return "Hand Tracking is not supported on this device."
+        case .requestingPermission:
+            return "Waiting for Hand Tracking permission."
+        case .denied:
+            return "Hand Tracking permission was not allowed."
+        case .running:
+            return "Hand Tracking is running."
+        case .failed(let description):
+            return "Failed to start Hand Tracking: \(description)"
+        }
+    }
+}
+
 @Observable
 @MainActor
 final class HandTrackingService {
@@ -8,23 +34,49 @@ final class HandTrackingService {
     private let provider = HandTrackingProvider()
 
     private(set) var snapshot = HandTrackingSnapshot()
-    private(set) var statusMessage = "Hand Tracking is not running."
+    private(set) var status = HandTrackingStatus.idle
 
     func start() async {
         guard HandTrackingProvider.isSupported else {
-            statusMessage = "Hand Tracking is not supported on this device."
+            status = .unsupported
+            return
+        }
+
+        var authorization = await session.queryAuthorization(for: [.handTracking])[.handTracking] ?? .notDetermined
+
+        if authorization == .notDetermined {
+            status = .requestingPermission
+            authorization = await session.requestAuthorization(for: [.handTracking])[.handTracking] ?? .notDetermined
+        }
+
+        guard authorization == .allowed else {
+            status = .denied
             return
         }
 
         do {
             try await session.run([provider])
-            statusMessage = "Hand Tracking is running."
+            status = .running
 
             for await update in provider.anchorUpdates {
+                guard !Task.isCancelled else {
+                    return
+                }
+
                 snapshot.update(with: update.anchor)
             }
         } catch {
-            statusMessage = "Failed to start Hand Tracking: \(error.localizedDescription)"
+            if Task.isCancelled {
+                return
+            }
+
+            status = .failed(error.localizedDescription)
         }
+    }
+
+    func stop() {
+        session.stop()
+        snapshot = HandTrackingSnapshot()
+        status = .idle
     }
 }
