@@ -3,6 +3,8 @@
         Hand Jutsu의 손 추적과 공간 시각화는 `ImmersiveSpace` 안에서 실행된다.
 
         이 튜토리얼에서는 기본 Window에서 버튼을 눌러 Immersive Space를 열고, 다시 닫을 수 있는 최소 구조를 만든다.
+
+        1장에서 만든 기본 `HandJutsuApp.swift`와 `ContentView.swift`는 이 장에서 교체한다. 나머지 두 파일은 새로 만든다.
     }
 
     @Section(title: "공간 식별자 만들기") {
@@ -18,7 +20,7 @@
 
         @Steps {
             @Step {
-                `AppSpace` 타입을 만들고, Hand Jutsu에서 사용할 Immersive Space id를 추가한다.
+                새 `AppSpace.swift` 파일을 만들고, Window와 Immersive Space가 함께 사용할 공간 id를 추가한다. 이 값은 다음 Step의 등록과 버튼의 열기 요청을 연결하는 이름표다.
 
                 @Code(name: "AppSpace.swift", file: "02-01-AppSpace.swift")
             }
@@ -29,12 +31,12 @@
         @ContentAndMedia {
             앱 진입점에서 기본 Window와 Immersive Space를 함께 선언한다.
 
-            `WindowGroup`은 앱의 기본 창을 만든다. `ImmersiveSpace`는 나중에 열 수 있는 공간을 등록한다.
+            `WindowGroup`은 앱의 기본 창을 만든다. `ImmersiveSpace`는 나중에 열 수 있는 공간을 등록한다. 등록만으로 공간이 자동으로 열리지는 않는다. 앱은 계속 `WindowGroup`으로 시작하고, 다음 Section의 `openImmersiveSpace(id:)`가 같은 id를 요청할 때만 이 공간이 열린다.
         }
 
         @Steps {
             @Step {
-                `WindowGroup` 아래에 `ImmersiveSpace(id:)`를 추가하고, content로 `ImmersiveView()`를 연결한다.
+                기본 생성 `HandJutsuApp.swift`를 아래 코드로 교체한다. `WindowGroup`은 그대로 두고, 그 아래에 나중에 열릴 `ImmersiveSpace`와 새 `ImmersiveView`를 등록한다.
 
                 @Code(name: "HandJutsuApp.swift", file: "02-02-HandJutsuApp.swift")
             }
@@ -50,7 +52,7 @@
 
         @Steps {
             @Step {
-                `ContentView`에 Immersive Space를 열고 닫는 버튼 상태와 비동기 호출 흐름을 추가한다.
+                기본 생성 `ContentView.swift`를 아래 코드로 교체한다. 버튼은 닫혀 있을 때만 `openImmersiveSpace(id:)`를 요청하고, `.opened` 결과를 받은 뒤에만 `Close Space` 상태로 바뀐다.
 
                 @Code(name: "ContentView.swift", file: "02-03-ContentView.swift")
             }
@@ -66,7 +68,7 @@
 
         @Steps {
             @Step {
-                `ImmersiveView`를 만들고 `RealityView` 안에 root entity를 추가한다.
+                새 `ImmersiveView.swift` 파일을 만들고 `RealityView` 안에 root entity를 추가한다. 지금은 비어 있지만, 3장부터 이 entity 아래에 손 추적과 관절 시각화를 연결한다.
 
                 @Code(name: "ImmersiveView.swift", file: "02-04-ImmersiveView.swift")
             }
@@ -77,14 +79,14 @@
         @ContentAndMedia {
             이번 장은 Apple Vision Pro 실기기가 없어도 확인할 수 있다.
 
-            Simulator에서는 앱이 기본 Window로 실행되는지, 버튼을 눌렀을 때 Immersive Space 요청이 동작하는지, 공간을 닫는 버튼 상태가 자연스럽게 바뀌는지 확인한다.
+            Simulator에서는 앱이 기본 Window로 실행되는지, 버튼을 눌렀을 때 Immersive Space 요청이 동작하는지, 공간을 닫는 버튼 상태가 자연스럽게 바뀌는지 확인한다. 빈 `ImmersiveView`는 아직 별도 3D 결과를 보여 주지 않는 것이 정상이다.
 
             실제 손 입력은 아직 사용하지 않으므로, Hand Tracking 권한이나 손 관절 데이터는 확인하지 않는다.
         }
 
         @Steps {
             @Step {
-                Simulator에서 앱을 실행하고, 기본 Window가 표시되는지 확인한다. `Open Space` 버튼을 눌렀을 때 Immersive Space 요청이 동작하고, `Close Space` 버튼으로 다시 Window 중심 흐름으로 돌아올 수 있어야 한다.
+                Simulator에서 앱을 실행해 처음에는 `Open Space` 버튼과 기본 Window가 보이는지, 버튼을 누르면 `Close Space`로 바뀌며 Immersive Space가 열리는지, 다시 닫으면 Window 흐름으로 돌아오는지 확인한다.
 
                 @Code(name: "ContentView.swift", file: "02-05-ContentView-Verification.swift")
             }

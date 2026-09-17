@@ -1,18 +1,26 @@
 # 01. Hand Jutsu 시작하기
 
-> 상태: 초안
-> 관련 문서: `docs/PROJECT_FOUNDATION.md`
-
 ## 이 장의 목표
 
-이 장에서는 Hand Jutsu가 어떤 프로젝트인지, 튜토리얼을 끝내면 무엇을 이해할 수 있는지 정리한다.
+이 장에서는 Hand Jutsu가 어떤 프로젝트인지 확인하고, 빈 visionOS App 프로젝트를 처음 실행한다.
 
 학습자는 이 장을 통해 다음을 이해해야 한다.
 
 - Hand Jutsu에서 만들 결과물
-- 튜토리얼을 따라가기 전에 필요한 사전 지식
+- 프로젝트를 만들 때 선택할 옵션과 Team/Signing 위치
+- 기본 생성 파일의 역할
 - 전체 학습 흐름
 - Apple Vision Pro 실기기에서 확인해야 하는 부분
+
+## 프로젝트 만들기와 첫 실행
+
+Xcode에서 **File > New > Project > visionOS > App**을 선택한다. Interface는 **SwiftUI**, Language는 **Swift**, Initial Scene은 **Window**로 둔다. 앱은 먼저 Window로 시작하고, 2장에서 버튼을 눌러 Immersive Space를 연다.
+
+프로젝트를 만든 뒤 target의 **Signing & Capabilities**에서 Team을 선택한다. Simulator에서는 기본 Window를 빌드해 흐름을 확인하고, Apple Vision Pro에 설치할 때는 현재 계정과 기기에 맞는 Team·Bundle Identifier가 필요하다.
+
+생성 직후에는 `HandJutsuApp.swift`, `ContentView.swift`, `Assets.xcassets`만 확인한다. 2장에서 앞의 두 Swift 파일을 바꾸고 새 Space 관련 파일을 추가한다.
+
+이 문서는 Xcode 27.0 (27A266a), visionOS Simulator 26.5를 기준으로 작성했다.
 
 ## Hand Jutsu란?
 
@@ -97,10 +105,11 @@ RealityKit, ARKit, 3D 좌표 변환, Hand Tracking은 처음 접해도 된다. �
 ## 이 장의 완료 기준
 
 - 프로젝트 목표를 한 문장으로 설명할 수 있다.
+- 빈 프로젝트의 기본 Window를 Simulator에서 실행할 수 있다.
 - 튜토리얼에서 만들 결과물을 설명할 수 있다.
 - 실기기 없이 따라갈 수 있는 부분과 Apple Vision Pro에서 확인해야 하는 부분을 구분할 수 있다.
 - 실기기 검증이 필요한 항목을 완료된 기능으로 착각하지 않는다.
 
 ## 다음 장
 
-[02. Hand Tracking 흐름](./02-hand-tracking-flow.md)에서는 visionOS 앱에서 Immersive Space와 Hand Tracking 흐름이 어떻게 이어지는지 살펴본다.
+[02. 첫 Immersive Space](./02-creating-immersive-space.md)에서는 visionOS 앱에서 Window와 Immersive Space가 어떻게 이어지는지 살펴본다.

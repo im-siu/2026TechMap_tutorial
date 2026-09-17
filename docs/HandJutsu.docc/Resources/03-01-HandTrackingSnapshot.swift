@@ -20,6 +20,8 @@ struct HandTrackingSnapshot {
             left = state
         case .right:
             right = state
+        @unknown default:
+            return
         }
     }
 }
