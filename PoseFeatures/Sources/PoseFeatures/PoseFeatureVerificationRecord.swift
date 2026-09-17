@@ -23,6 +23,28 @@ public struct PoseFeatureVerificationRecord: Codable, Sendable {
     public let evaluationStatus: PoseEvaluationStatus
     public let hands: [HandPoseFeatureRecord]
     public let metrics: BilateralPinchMetricRecord
+
+    public static func encode(_ record: Self) throws -> Data {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return try encoder.encode(record)
+    }
+
+    public static func decode(from data: Data) throws -> Self {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let record = try decoder.decode(Self.self, from: data)
+
+        guard record.schemaVersion == currentSchemaVersion else {
+            throw PoseFeatureVerificationRecordDecodingError.unsupportedSchemaVersion(record.schemaVersion)
+        }
+
+        return record
+    }
+}
+
+public enum PoseFeatureVerificationRecordDecodingError: Error, Equatable, Sendable {
+    case unsupportedSchemaVersion(Int)
 }
 
 public enum PoseFeatureVerificationAdapter {

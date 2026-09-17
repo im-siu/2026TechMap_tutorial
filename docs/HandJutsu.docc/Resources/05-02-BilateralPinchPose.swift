@@ -1,18 +1,18 @@
-import PoseFeatures
+import Foundation
 
-enum BilateralPinchPose {
-    static let requiredJoints: Set<HandJoint> = [
+public enum BilateralPinchPose {
+    public static let requiredJoints: Set<HandJoint> = [
         .wrist,
         .thumbTip,
         .indexFingerTip,
         .middleFingerKnuckle
     ]
 
-    static let auxiliaryJoints: Set<HandJoint> = [
+    public static let auxiliaryJoints: Set<HandJoint> = [
         .thumbKnuckle,
         .indexFingerKnuckle,
         .forearmWrist
     ]
 
-    static let normalizedPinchThreshold: Float = 0.35
+    public static let normalizedPinchThreshold: Float = 0.35
 }

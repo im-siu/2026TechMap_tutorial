@@ -63,6 +63,15 @@ final class BilateralPinchPoseTests: XCTestCase {
         XCTAssertEqual(evaluation.status, .notEvaluable)
     }
 
+    func testDuplicatedLeftFeatureIsNotEvaluable() {
+        let left = completeInput(side: .left, scale: 0.1, pinchDistanceRatio: 0.2)
+        let feature = BilateralPinchPose.makeFeature(from: left)
+
+        let evaluation = BilateralPinchPose.evaluate(left: feature, right: feature)
+
+        XCTAssertEqual(evaluation.status, .notEvaluable)
+    }
+
     func testVerificationRecordUsesCurrentSchemaAndIncludesMetrics() {
         let record = PoseFeatureVerificationAdapter.makeRecord(
             leftInput: completeInput(side: .left, scale: 0.1, pinchDistanceRatio: 0.2),
@@ -75,6 +84,31 @@ final class BilateralPinchPoseTests: XCTestCase {
         XCTAssertEqual(record.evaluationStatus, .matched)
         XCTAssertEqual(record.hands.count, 2)
         XCTAssertEqual(record.metrics.leftNormalizedPinchDistance ?? -1, 0.2, accuracy: 0.0001)
+    }
+
+    func testVerificationRecordRejectsUnsupportedSchemaVersion() throws {
+        let data = Data(
+            """
+            {
+              "schemaVersion": 999,
+              "capturedAt": "1970-01-01T00:00:00Z",
+              "targetPose": "bilateralPinch",
+              "evaluationStatus": "matched",
+              "hands": [],
+              "metrics": {
+                "leftNormalizedPinchDistance": 0.2,
+                "rightNormalizedPinchDistance": 0.2
+              }
+            }
+            """.utf8
+        )
+
+        XCTAssertThrowsError(try PoseFeatureVerificationRecord.decode(from: data)) { error in
+            XCTAssertEqual(
+                error as? PoseFeatureVerificationRecordDecodingError,
+                .unsupportedSchemaVersion(999)
+            )
+        }
     }
 
     func testTrackingAdapterCreatesARecordFromTrackedJointSamples() {

@@ -10,6 +10,8 @@
             첫 번째 대상은 양손 핀치 수인이다. 왼손과 오른손 모두 엄지 끝과 검지 끝이 가까우면 통과한다.
 
             각 손에서 `wrist`, `thumbTip`, `indexFingerTip`, `middleFingerKnuckle`은 필수 관절이다. 손목은 기준점이고, 가운데손가락 너클은 손 크기 기준이 되며, 두 손끝은 핀치 거리를 계산한다. 엄지·검지 너클과 팔목은 방향을 해석할 때 쓸 보조 관절이다.
+
+            이 장의 코드 카드는 모두 `PoseFeatures` package target의 실제 파일이다. 설정, feature 생성, 평가를 서로 다른 파일로 나누어, 각 단계에서 추가한 코드가 곧 빌드 대상이 되게 한다.
         }
 
         @Steps {
@@ -38,14 +40,14 @@
             @Step {
                 손목을 원점으로 바꾸고, 엄지 끝과 검지 끝 사이 거리를 손목과 가운데손가락 너클 거리로 나눈다. 이 비율은 손이 커지거나 작아져도 비교할 수 있다.
 
-                @Code(name: "BilateralPinchPose.swift", file: "05-03-BilateralPinchPose-Feature.swift")
+                @Code(name: "BilateralPinchPose+Feature.swift", file: "05-03-BilateralPinchPose-Feature.swift")
             }
         }
     }
 
     @Section(title: "한 시점의 양손 핀치 평가하기") {
         @ContentAndMedia {
-            좌우 손 모두 정규화된 핀치 거리를 만들 수 있으면 임계값과 비교한다. 두 값이 모두 임계값 이하면 `matched`, 하나라도 크면 `notMatched`다.
+            좌우 입력에는 각각 왼손 feature와 오른손 feature가 와야 한다. 두 feature의 손 방향과 정규화된 핀치 거리를 확인한 뒤, 두 값이 모두 임계값 이하면 `matched`, 하나라도 크면 `notMatched`다. `threshold`는 기본값을 쓰거나 실기기 측정값에 맞춰 호출 시 조정할 수 있다.
 
             필수 관절이 빠져 거리 자체를 만들 수 없으면 `notEvaluable`이다. 이 결과는 한 프레임의 측정값만 설명한다. 여러 프레임을 유지하는 `GestureClassifier`나 히스테리시스는 여기서 추가하지 않는다.
         }
@@ -54,16 +56,16 @@
             @Step {
                 양손의 정규화 핀치 거리를 비교해 정적 평가 결과를 만든다.
 
-                @Code(name: "BilateralPinchPose.swift", file: "05-04-BilateralPinchPose-Evaluation.swift")
+                @Code(name: "BilateralPinchPose+Evaluation.swift", file: "05-04-BilateralPinchPose-Evaluation.swift")
             }
         }
     }
 
     @Section(title: "Hand Tracking 입력과 검증 기록 연결하기") {
         @ContentAndMedia {
-            `HandTrackingSnapshot`은 ARKit 관절 이름과 월드 transform을 가진다. 어댑터는 이 값을 `PoseFeatures`의 관절 이름과 `SIMD3<Float>` 위치로 바꿔 패키지 입력을 만든다.
+            앱 경계에서는 `HandTrackingSnapshot`의 ARKit 관절 이름과 월드 transform을 `TrackedJointPosition` 배열로 바꾼다. 순수 Swift package의 어댑터는 이 배열을 `PoseFeatures` 입력으로 바꿔, ARKit 의존성을 feature 계산에서 분리한다.
 
-            실기기 검증 기록에는 feature 상태와 수치가 함께 필요하다. schema version 1은 캡처 시각, 대상 수인, 평가 결과, 관절 확보율, 사용 가능·누락 feature, 양손 핀치 거리를 기록한다. 미래 버전의 reader는 지원하지 않는 schema version을 거부하고, 호환 또는 마이그레이션 정책을 문서화한다.
+            실기기 검증 기록에는 feature 상태와 수치가 함께 필요하다. schema version 1은 캡처 시각, 대상 수인, 평가 결과, 관절 확보율, 사용 가능·누락 feature, 양손 핀치 거리를 기록한다. `PoseFeatureVerificationRecord.decode(from:)`는 지원하지 않는 schema version을 거부하므로, 호환 또는 마이그레이션 정책을 문서화할 수 있다.
         }
 
         @Steps {
@@ -74,7 +76,7 @@
             }
 
             @Step {
-                양손 feature와 정적 평가 결과를 JSON 기록으로 인코딩한다.
+                양손 feature와 정적 평가 결과를 JSON 기록으로 인코딩하고, 지원하는 schema version인지 확인하며 디코딩한다.
 
                 @Code(name: "PoseFeatureVerificationRecord.swift", file: "05-06-PoseFeatureVerificationRecord.swift")
             }
@@ -85,7 +87,7 @@
         @ContentAndMedia {
             실제 손 입력은 Apple Vision Pro가 있어야 받을 수 있다. 반면 feature 계산은 순수 Swift이므로 손 크기, 누락 관절, 다른 손모양을 합성 좌표로 재현해 빠르게 검증할 수 있다.
 
-            테스트에서는 손 크기가 달라도 양손 핀치가 `matched`인지, 다른 손모양이 `notMatched`인지, 필수 관절 누락이 `notEvaluable`인지 확인한다. 보조 관절만 빠진 경우에는 `partial`이지만 핀치 거리 계산은 계속 가능해야 한다.
+            테스트에서는 손 크기가 달라도 양손 핀치가 `matched`인지, 다른 손모양이 `notMatched`인지, 필수 관절 누락이 `notEvaluable`인지 확인한다. 보조 관절만 빠진 경우에는 `partial`이지만 핀치 거리 계산은 계속 가능해야 한다. 양손 입력의 방향이 바뀌거나 지원하지 않는 schema version이 들어온 경우도 `notEvaluable` 또는 오류로 남는지 확인한다.
         }
 
         @Steps {
