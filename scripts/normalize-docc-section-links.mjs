@@ -314,10 +314,33 @@ body[data-color-scheme="dark"] {
 
 /* Keep the tutorial collection's introductory artwork secondary to its title. */
 section.hero > .asset:nth-of-type(2) {
-  width: 50%;
+  width: clamp(15rem, 34vw, 32rem);
   margin-inline: auto;
-  margin-block-start: 0rem;
+  margin-block-start: -2rem;
   margin-block-end: 0rem;
+  position: relative;
+  z-index: 0;
+}
+
+section.hero a {
+  position: relative;
+  z-index: 1;
+}
+
+section.hero > .asset:nth-of-type(2) img {
+  display: block;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.14) 0%,
+    rgba(0, 0, 0, 0.62) 34%,
+    #000 70%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.14) 0%,
+    rgba(0, 0, 0, 0.62) 34%,
+    #000 70%
+  );
 }
 `, "utf8");
 
