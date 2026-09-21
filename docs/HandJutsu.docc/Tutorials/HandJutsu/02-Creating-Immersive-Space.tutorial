@@ -31,7 +31,11 @@
         @ContentAndMedia {
             앱 진입점에서 기본 Window와 Immersive Space를 함께 선언한다.
 
-            `WindowGroup`은 앱의 기본 창을 만든다. `ImmersiveSpace`는 나중에 열 수 있는 공간을 등록한다. 등록만으로 공간이 자동으로 열리지는 않는다. 앱은 계속 `WindowGroup`으로 시작하고, 다음 Section의 `openImmersiveSpace(id:)`가 같은 id를 요청할 때만 이 공간이 열린다.
+            `WindowGroup`은 앱이 처음 여는 기본 창이다. 이 안에서 `ContentView`를 보여 준다.
+
+            `ImmersiveSpace`는 나중에 열 공간을 등록한다. 공간이 열리면 `ImmersiveView`를 보여 준다.
+
+            등록만으로 공간이 열리지는 않는다. `openImmersiveSpace(id:)`가 같은 id를 요청할 때만 공간이 열린다.
         }
 
         @Steps {
@@ -54,7 +58,9 @@
             @Step {
                 기본 생성 `ContentView.swift`를 아래 코드로 교체한다. 버튼은 닫혀 있을 때만 `openImmersiveSpace(id:)`를 요청하고, `.opened` 결과를 받은 뒤에만 `Close Space` 상태로 바뀐다.
 
-                @Code(name: "ContentView.swift", file: "02-03-ContentView.swift")
+                @Code(name: "ContentView.swift", file: "02-03-ContentView.swift") {
+                    @Image(source: 02-05-simulator-window.png, alt: "Apple Vision Pro Simulator에서 Hand Jutsu Window와 Open Space 버튼을 보여 주는 실행 화면")
+                }
             }
         }
     }
@@ -75,38 +81,18 @@
         }
     }
 
-    @Section(title: "Simulator에서 확인하기") {
+    @Section(title: "Simulator에서 실행 확인하기") {
         @ContentAndMedia {
-            이번 장은 Apple Vision Pro 실기기가 없어도 확인할 수 있다.
+            모든 코드를 넣은 뒤, Apple Vision Pro Simulator에서 Window와 Immersive Space의 열기·닫기 흐름을 확인한다. 이 Step에서는 코드를 더 수정하지 않는다.
 
-            Simulator에서는 앱이 기본 Window로 실행되는지, 버튼을 눌렀을 때 Immersive Space 요청이 동작하는지, 공간을 닫는 버튼 상태가 자연스럽게 바뀌는지 확인한다. 빈 `ImmersiveView`는 아직 별도 3D 결과를 보여 주지 않는 것이 정상이다.
+            아래 화면은 앱을 막 실행한 직후의 기본 Window다. 빈 `ImmersiveView`는 아직 별도 3D 콘텐츠를 보여 주지 않는 것이 정상이다.
 
-            실제 손 입력은 아직 사용하지 않으므로, Hand Tracking 권한이나 손 관절 데이터는 확인하지 않는다.
+            @Image(source: 02-05-simulator-window.png, alt: "Apple Vision Pro Simulator의 거실 환경 가운데 Hand Jutsu Window와 Open Space 버튼이 보이는 화면")
         }
 
         @Steps {
             @Step {
-                Simulator에서 앱을 실행해 처음에는 `Open Space` 버튼과 기본 Window가 보이는지, 버튼을 누르면 `Close Space`로 바뀌며 Immersive Space가 열리는지, 다시 닫으면 Window 흐름으로 돌아오는지 확인한다.
-
-                @Code(name: "ContentView.swift", file: "02-05-ContentView-Verification.swift")
-            }
-        }
-    }
-
-    @Section(title: "다음 장으로 이어가기") {
-        @ContentAndMedia {
-            이 장에서 만든 구조는 다음 장의 출발점이다.
-
-            3장에서는 `ImmersiveView`가 열렸을 때 `ARKitSession`과 `HandTrackingProvider`를 시작하고, 왼손과 오른손 `HandAnchor`를 받는 흐름을 연결한다.
-
-            `WindowGroup`, `ImmersiveSpace`, `ImmersiveView`의 역할을 구분할 수 있다면 다음 장으로 넘어갈 준비가 된 것이다.
-        }
-
-        @Steps {
-            @Step {
-                다음 장에서 Hand Tracking 코드를 연결할 기준점으로 `ImmersiveView`의 root entity를 유지한다.
-
-                @Code(name: "ImmersiveView.swift", file: "02-06-ImmersiveView-Next.swift")
+                Simulator에서 앱을 실행한다. 처음에는 `Open Space` 버튼과 기본 Window가 보이는지 확인한다. 버튼을 누르면 `Close Space`로 바뀌며 Immersive Space가 열리고, 다시 닫으면 Window 흐름으로 돌아와야 한다. 실제 손 입력은 아직 사용하지 않으므로 Hand Tracking 권한이나 손 관절 데이터는 확인하지 않는다.
             }
         }
     }

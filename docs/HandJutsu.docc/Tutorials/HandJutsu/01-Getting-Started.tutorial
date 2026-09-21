@@ -1,0 +1,57 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Hand Jutsu 시작하기") {
+        SwiftUI, RealityKit, ARKit을 사용해 Apple Vision Pro에서 양손을 추적하고, 손 모양 판정에 필요한 관절 데이터를 만드는 Hand Jutsu 앱을 단계적으로 만든다.
+
+        먼저 빈 visionOS 프로젝트를 만들고 기본 Window를 실행한다. 이 장에서는 아직 Hand Tracking을 켜거나 관절을 그리지 않는다.
+    }
+
+    @Section(title: "새 visionOS 프로젝트 만들기") {
+        @ContentAndMedia {
+            이 튜토리얼은 처음부터 visionOS App으로 만든 빈 프로젝트를 기준으로 진행한다. Xcode가 기본 Window와 SwiftUI 진입점을 만들어 주므로, 다음 장에서 Immersive Space를 추가하기 좋은 출발점이 된다.
+
+            @Image(source: hand-jutsu-overview.svg, alt: "Hand Jutsu가 기본 Window에서 Immersive Space와 손 추적으로 이어지는 흐름을 보여 주는 이미지")
+        }
+
+        @Steps {
+            @Step {
+                Xcode에서 **File > New > Project**를 선택한다. **visionOS > App** 템플릿을 고른 뒤 다음으로 진행한다.
+            }
+
+            @Step {
+                Product Name에 `HandJutsu`를 입력한다. Interface는 SwiftUI, Language는 Swift, Initial Scene은 Window로 둔다. Organization Identifier에는 자신의 역방향 도메인 이름을 입력한다.
+            }
+        }
+    }
+
+    @Section(title: "실행 준비 확인하기") {
+        @ContentAndMedia {
+            프로젝트를 만든 뒤 target의 **Signing & Capabilities**에서 Team을 선택한다. Simulator에서 기본 Window를 실행할 때와 Apple Vision Pro에 설치할 때 필요한 설정을 구분한다.
+
+            이미 iOS 또는 macOS App으로 시작한 프로젝트만 target의 General 화면에서 Apple Vision을 추가한다. Build Settings에서 `Scene Manifest`를 검색해 Debug와 Release의 visionOS 적용값이 `Yes`인지 확인한다. `Any iOS SDK` 조건을 `Any SDK`로 일괄 변경하거나 Info 탭에 manifest를 직접 추가하지 않는다.
+        }
+
+        @Steps {
+            @Step {
+                target의 **Signing & Capabilities**에서 사용할 Team을 선택한다. Apple Vision Pro에 설치할 때는 현재 계정·기기와 맞는 Team 및 고유한 Bundle Identifier가 필요하다.
+            }
+
+            @Step {
+                Project Navigator에서 기본 생성 파일을 확인한다. `HandJutsuApp.swift`는 앱의 Window를 시작하고, `ContentView.swift`는 처음 보이는 SwiftUI 화면이다. 두 파일은 2장에서 바꾸며, `Assets.xcassets`는 이번 1–3장에서 기본값을 유지한다.
+            }
+        }
+    }
+
+    @Section(title: "첫 Simulator 실행하기") {
+        @ContentAndMedia {
+            상단 실행 대상에서 Apple Vision Pro Simulator를 고른 뒤 Run을 누른다. 기본 `ContentView`의 인사말이 Window에 보이면, 다음 장의 출발점이 준비된 것이다.
+
+            이 화면은 아직 공간 콘텐츠나 손 추적 결과를 보여 주지 않는다. Immersive Space는 2장에서, Hand Tracking은 3장에서 추가한다.
+        }
+
+        @Steps {
+            @Step {
+                선택한 Simulator에서 앱을 실행한다. 빌드가 끝난 뒤 기본 Window가 열리는지 확인한다. `ContentView.swift`의 텍스트를 바꿨을 때 Window에도 같은 변화가 보이면 정상이다.
+            }
+        }
+    }
+}
