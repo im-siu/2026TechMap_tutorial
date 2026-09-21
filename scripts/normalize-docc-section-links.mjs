@@ -111,6 +111,29 @@ const highlightLinesByFile = {
     ...range(40, 50),
     ...range(64, 82),
   ],
+  "07-01-GestureClassifierModels.swift": range(3, 43),
+  "07-02-GestureClassifier-CandidateStart.swift": [
+    ...range(3, 28),
+    ...range(33, 49),
+  ],
+  "07-03-GestureClassifier-CandidateHold.swift": [
+    ...range(29, 37),
+    ...range(48, 51),
+  ],
+  "07-04-GestureClassifier-Loss.swift": [
+    ...range(8, 10),
+    ...range(40, 44),
+    ...range(47, 61),
+    ...range(74, 83),
+    ...range(85, 157),
+    ...range(164, 167),
+  ],
+  "07-05-GestureClassifier-Cooldown.swift": [
+    11,
+    ...range(63, 69),
+    ...range(177, 200),
+  ],
+  "07-06-GestureClassifierTests.swift": range(4, 107),
 };
 
 function range(start, end) {

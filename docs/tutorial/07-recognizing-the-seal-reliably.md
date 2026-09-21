@@ -6,12 +6,14 @@
 
 6장의 `candidate`는 한 프레임의 관찰 결과다. 손은 계속 움직이고, 관절은 잠깐 가려지며, 임계값 근처에서는 결과가 빠르게 바뀔 수 있다. 이 장에서는 여러 프레임의 결과를 모아 실제 발동에 사용할 안정된 수인 상태를 만든다.
 
+단계별 코드와 합성 시간열 검증은 [DocC 7장](../HandJutsu.docc/Tutorials/HandJutsu/07-Stabilizing-Seal-Recognition.tutorial)에서 확인한다.
+
 이 장을 마치면 다음을 설명할 수 있다.
 
 - 한 프레임의 포즈 판정과 시간 기반 `GestureClassifier`의 책임 차이
 - 후보 수인이 일정 시간 유지됐을 때만 충전을 시작하는 이유
 - 자연스러운 손깍지 가림과 실제 수인 해제를 구분하는 방법
-- `SpellStateMachine`이 효과 구현과 독립적으로 상태를 전환하는 방법
+- `recognitionStarted`·`recognitionEnded` 이벤트를 효과 구현과 분리하는 방법
 
 ## 역할을 분리한다
 
@@ -19,13 +21,11 @@
 InterlockedTwoFingerSealFeature
 → 정적 결과: notEvaluable / notMatched / candidate
 → GestureClassifier
-→ 안정 결과: idle / matched / lost
-→ SpellStateMachine
-→ preparing / charging / releasing / cooldown
+→ 안정 결과: idle / candidate / recognized / lost / cooldown
 → SpellEffectController
 ```
 
-`GestureClassifier`는 "지금 수인이 안정적으로 유지됐는가"만 답한다. `SpellStateMachine`은 그 답을 받아 언제 준비하고, 충전하고, 발동을 끝낼지를 결정한다. 수인 규칙이 RealityKit Entity를 직접 만들지 않게 분리해야 임계값을 조정하거나 다른 효과를 붙일 때 책임이 섞이지 않는다.
+`GestureClassifier`는 "지금 수인이 안정적으로 유지됐는가"만 답하고, 시작·종료 순간은 한 번성 이벤트로 반환한다. 다음 장의 효과 제어기는 이 이벤트를 받아 준비·충전·방출 흐름을 만들 수 있다. 수인 규칙이 RealityKit Entity를 직접 만들지 않게 분리해야 임계값을 조정하거나 다른 효과를 붙일 때 책임이 섞이지 않는다.
 
 ## 안정화 상태
 
@@ -35,10 +35,11 @@ InterlockedTwoFingerSealFeature
 | --- | --- | --- | --- |
 | `idle` | 초기 상태 또는 수인이 아님 | `candidate`가 관찰됨 | 발동하지 않는 상태 |
 | `candidate` | 6장의 정적 결과가 후보 | 유지 시간이 충분함, 또는 `notMatched` | 수인이 맞는지 기다리는 상태 |
-| `matched` | 후보가 최소 유지 시간을 넘김 | 수인이 해제되거나 신뢰도 유예가 끝남 | 발동에 사용할 안정 상태 |
-| `lost` | `matched` 중 필수 관절이 잠시 부족함 | 관절 복구 또는 유예 시간 만료 | 가림과 실제 추적 손실을 구분하는 상태 |
+| `recognized` | 후보가 최소 유지 시간을 넘김 | 수인이 해제되거나 신뢰도 유예가 끝남 | 발동에 사용할 안정 상태 |
+| `lost` | `candidate` 또는 `recognized` 중 필수 관절이 잠시 부족함 | 관절 복구 또는 유예 시간 만료 | 가림과 실제 추적 손실을 구분하는 상태 |
+| `cooldown` | 인식이 끝남 | 재발동 대기 시간 만료 | 연속 발동을 막는 상태 |
 
-`candidate`에서 바로 효과를 내면 손가락이 잠깐 지나간 모양도 주문으로 오인할 수 있다. 반대로 관절 하나가 한 프레임 누락됐다고 즉시 `matched`를 해제하면 손깍지처럼 가림이 많은 동작이 불안정해진다.
+`candidate`에서 바로 효과를 내면 손가락이 잠깐 지나간 모양도 주문으로 오인할 수 있다. 반대로 관절 하나가 한 프레임 누락됐다고 즉시 `recognized`를 해제하면 손깍지처럼 가림이 많은 동작이 불안정해진다.
 
 ## 시작값과 히스테리시스
 
@@ -51,7 +52,7 @@ InterlockedTwoFingerSealFeature
 | 재발동 대기 | 약 0.5초 | 같은 수인이 반복 발동하는 것을 막음 |
 | 진입/해제 임계값 | 서로 다르게 설정 | 경계값 근처 깜빡임을 줄임 |
 
-예를 들어 검지·중지 펴짐 점수가 높아야 `candidate`로 들어가지만, 이미 `matched`인 상태에서는 약간 낮아져도 바로 해제하지 않게 만들 수 있다. 이처럼 진입 조건과 해제 조건을 다르게 두는 방식을 히스테리시스라고 한다.
+예를 들어 검지·중지 펴짐 점수가 높아야 `candidate`로 들어가지만, 이미 `recognized`인 상태에서는 약간 낮아져도 바로 해제하지 않게 만들 수 있다. 이처럼 진입 조건과 해제 조건을 다르게 두는 방식을 히스테리시스라고 한다.
 
 ## 주문 상태 전환
 
@@ -60,7 +61,7 @@ InterlockedTwoFingerSealFeature
 ```text
 idle
 → preparing     수인이 candidate가 됨
-→ charging      수인이 matched가 됨
+→ charging      수인이 recognized가 됨
 → releasing     charged 상태에서 수인을 풀거나 발동 조건을 충족함
 → cooldown      효과 종료 뒤 짧은 재발동 대기
 → idle
@@ -69,7 +70,7 @@ idle
 | 현재 상태 | 입력 | 다음 상태 | 화면 피드백 |
 | --- | --- | --- | --- |
 | `idle` | `candidate` | `preparing` | 작은 안내 표시 |
-| `preparing` | `matched` | `charging` | 손 사이에 작은 빛 |
+| `preparing` | `recognized` | `charging` | 손 사이에 작은 빛 |
 | `preparing` | `notMatched` | `idle` | 안내 표시 제거 |
 | `charging` | 수인 해제 | `releasing` | 효과를 방출하거나 확장 |
 | `charging` | 누락 유예 만료 | `idle` 또는 `cooldown` | 안전하게 효과 제거 |
@@ -82,9 +83,9 @@ idle
 
 실기기가 없어도 시간 기반 로직은 순수 Swift 테스트로 확인할 수 있다. 테스트는 실제 대기하지 않고, 프레임마다 시간과 정적 결과를 주입한다.
 
-- `candidate`가 최소 유지 시간보다 짧으면 `matched`가 되지 않는다.
-- `candidate`가 충분히 유지되면 한 번만 `matched`가 된다.
-- `matched` 중 짧은 `notEvaluable`은 `lost`를 거쳐 다시 회복할 수 있다.
+- `candidate`가 최소 유지 시간보다 짧으면 `recognized`가 되지 않는다.
+- `candidate`가 충분히 유지되면 한 번만 `recognized`가 된다.
+- `recognized` 중 짧은 `notEvaluable`은 `lost`를 거쳐 다시 회복할 수 있다.
 - `notEvaluable`이 유예 시간보다 길면 안전하게 발동을 취소한다.
 - `cooldown` 중 새 `candidate`는 재발동시키지 않는다.
 
@@ -102,7 +103,7 @@ idle
 
 ### 손이 조금 흔들릴 때 계속 충전과 해제를 반복한다
 
-진입 임계값과 해제 임계값을 분리하고, `matched`를 해제하기 전에 짧은 유예 시간을 둔다. 모든 프레임을 평균 내기보다 먼저 어떤 조건이 흔들리는지 디버그 값으로 확인한다.
+진입 임계값과 해제 임계값을 분리하고, `recognized`를 해제하기 전에 짧은 유예 시간을 둔다. 모든 프레임을 평균 내기보다 먼저 어떤 조건이 흔들리는지 디버그 값으로 확인한다.
 
 ### 손깍지에서 가려지는 관절 때문에 발동이 취소된다
 
