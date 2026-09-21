@@ -4,7 +4,7 @@
 
         이 튜토리얼에서는 기본 Window에서 버튼을 눌러 Immersive Space를 열고, 다시 닫을 수 있는 최소 구조를 만든다.
 
-        1장에서 만든 기본 `HandJutsuApp.swift`와 `ContentView.swift`는 이 장에서 교체한다. 나머지 두 파일은 새로 만든다.
+        1장에서 RealityKit과 Full Immersive Space를 선택했으므로, Xcode가 기본 `HandJutsuApp.swift`, `ContentView.swift`, `ImmersiveView.swift`와 Space 열기용 보조 파일을 만들었다. 이 장에서는 `AppSpace.swift`만 새로 만들고, 나머지 세 View 파일은 교체한다.
     }
 
     @Section(title: "공간 식별자 만들기") {
@@ -20,16 +20,18 @@
 
         @Steps {
             @Step {
-                새 `AppSpace.swift` 파일을 만들고, Window와 Immersive Space가 함께 사용할 공간 id를 추가한다. 이 값은 다음 Step의 등록과 버튼의 열기 요청을 연결하는 이름표다.
+                새 `AppSpace.swift` 파일을 만들고, Window와 Immersive Space가 함께 사용할 공간 id를 추가한다. 이 값은 템플릿이 만든 Space 등록과 버튼의 열기 요청을 연결하는 이름표다.
+
+                Xcode가 `AppModel.swift`와 `ToggleImmersiveSpaceButton.swift`를 만들었다면 이 파일들은 삭제한다. 아래 Step의 간단한 Open/Close 구현은 이 보조 파일을 사용하지 않는다.
 
                 @Code(name: "AppSpace.swift", file: "02-01-AppSpace.swift")
             }
         }
     }
 
-    @Section(title: "App 진입점에 Immersive Space 등록하기") {
+    @Section(title: "템플릿의 Immersive Space 연결 정리하기") {
         @ContentAndMedia {
-            앱 진입점에서 기본 Window와 Immersive Space를 함께 선언한다.
+            1장에서 선택한 템플릿은 앱 진입점에 기본 Window와 Immersive Space를 이미 선언해 둔다. 여기서는 새 Scene을 추가하지 않고, Space id를 앞 Step의 `AppSpace` 상수로 정리한다.
 
             `WindowGroup`은 앱이 처음 여는 기본 창이다. 이 안에서 `ContentView`를 보여 준다.
 
@@ -40,7 +42,7 @@
 
         @Steps {
             @Step {
-                기본 생성 `HandJutsuApp.swift`를 아래 코드로 교체한다. `WindowGroup`은 그대로 두고, 그 아래에 나중에 열릴 `ImmersiveSpace`와 새 `ImmersiveView`를 등록한다.
+                기본 생성 `HandJutsuApp.swift`를 아래 코드로 교체한다. `WindowGroup`과 기존 `ImmersiveSpace`는 하나씩만 유지하고, Space id에는 `AppSpace.handJutsu`를 사용한다. `ImmersiveSpace`를 한 번 더 추가하지 않는다.
 
                 @Code(name: "HandJutsuApp.swift", file: "02-02-HandJutsuApp.swift")
             }
@@ -67,14 +69,14 @@
 
     @Section(title: "Immersive View 준비하기") {
         @ContentAndMedia {
-            Immersive Space 안에 들어갈 View를 만든다.
+            1장의 RealityKit 템플릿이 만든 Immersive Space 안의 View를 정리한다.
 
             이번 장의 `ImmersiveView`는 비어 있는 root entity만 추가한다. 이 root entity는 이후 장에서 손 관절 구체나 공간 효과를 붙일 기준점이 된다.
         }
 
         @Steps {
             @Step {
-                새 `ImmersiveView.swift` 파일을 만들고 `RealityView` 안에 root entity를 추가한다. 지금은 비어 있지만, 3장부터 이 entity 아래에 손 추적과 관절 시각화를 연결한다.
+                기본 생성 `ImmersiveView.swift`를 아래 코드로 교체하고 `RealityView` 안에 root entity를 추가한다. 지금은 비어 있지만, 3장부터 이 entity 아래에 손 추적과 관절 시각화를 연결한다.
 
                 @Code(name: "ImmersiveView.swift", file: "02-04-ImmersiveView.swift")
             }

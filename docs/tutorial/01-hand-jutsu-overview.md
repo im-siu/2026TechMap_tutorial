@@ -16,7 +16,7 @@
 
 Xcode에서 **File > New > Project > visionOS > App**을 선택한다. Product Name은 `HandJutsu`, Organization Identifier는 자신의 역방향 도메인 이름으로 둔다. Apple Vision Pro에 설치할 계획이라면 Team에는 자신의 개발 Team을 선택한다.
 
-Initial Scene은 **Window**, Immersive Space Renderer는 **None**, Testing System은 **None**으로 둔다. Renderer를 None으로 고르면 Immersive Space 선택 항목은 비활성화된다. `RealityKit`과 Full Immersive Space를 선택하면 관련 Scene과 파일이 템플릿에 먼저 생성되어, 2장에서 직접 추가하는 학습 흐름과 겹친다. 앱은 먼저 Window로 시작하고, 2장에서 버튼을 눌러 Immersive Space를 연다.
+Initial Scene은 **Window**, Immersive Space Renderer는 **RealityKit**, Immersive Space는 **Full**, Testing System은 **None**으로 둔다. 이 템플릿은 기본 Window와 Full Immersive Space의 뼈대를 함께 만든다. 2장에서는 새 Space를 추가하지 않고, 이 기본 뼈대를 사용해 버튼으로 Space를 여닫는 흐름을 만든다.
 
 프로젝트를 만든 뒤 target의 **Signing & Capabilities**에서 Team을 선택한다. Simulator에서는 기본 Window를 빌드해 흐름을 확인하고, Apple Vision Pro에 설치할 때는 현재 계정과 기기에 맞는 Team·Bundle Identifier가 필요하다.
 

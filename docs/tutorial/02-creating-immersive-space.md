@@ -11,11 +11,13 @@
 ## 파일 변경 순서
 
 1. 새 `AppSpace.swift` 파일에 Space id를 만든다.
-2. 기본 생성 `HandJutsuApp.swift`를 교체해 `ImmersiveSpace`를 등록한다.
+2. 기본 생성 `HandJutsuApp.swift`의 기존 `ImmersiveSpace`를 `AppSpace` id로 정리한다.
 3. 기본 생성 `ContentView.swift`를 교체해 Open/Close 버튼을 넣는다.
-4. 새 `ImmersiveView.swift` 파일에 빈 RealityKit root entity를 만든다.
+4. 기본 생성 `ImmersiveView.swift`에 빈 RealityKit root entity를 만든다.
 
-`ImmersiveSpace`를 App에 등록해도 자동으로 열리지는 않는다. 앱은 계속 `ContentView`를 담은 `WindowGroup`으로 시작하며, `openImmersiveSpace(id:)`가 같은 id를 요청할 때 `ImmersiveView`를 담은 Space가 열린다.
+1장에서 RealityKit과 Full Immersive Space를 선택하면 Xcode가 Space 열기용 `AppModel.swift`와 `ToggleImmersiveSpaceButton.swift`를 함께 만들 수 있다. 이 장의 단순한 Open/Close 구현은 이 파일을 사용하지 않으므로 삭제한다.
+
+`ImmersiveSpace`는 템플릿에 이미 등록되어 있어도 자동으로 열리지는 않는다. 앱은 계속 `ContentView`를 담은 `WindowGroup`으로 시작하며, `openImmersiveSpace(id:)`가 같은 id를 요청할 때 `ImmersiveView`를 담은 Space가 열린다.
 
 ## Simulator에서 확인하기
 
