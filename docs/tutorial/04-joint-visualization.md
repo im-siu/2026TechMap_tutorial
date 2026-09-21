@@ -1,16 +1,12 @@
 # 04. 관절을 공간에 그리기
 
-> 상태: 코드 구조 검증 완료, Apple Vision Pro 실기기 미검증
->
-> 예제 코드 기준: PR #8 / 커밋 [`d3b57bd`](https://github.com/im-siu/2026TechMap_tutorial/commit/d3b57bd5e59e2bf4b62ed57ba02b3aa53d23137f)
-
-이전: 3장 양손 추적 시작(작성 예정) · 다음: 5장 Pose Features로 이어가기(작성 예정)
+이전: [3장 양손 추적 시작](./03-starting-hand-tracking.md) · 다음: [5장 Pose Features로 이어가기](./05-building-pose-features.md)
 
 ## 이 장에서 만들 결과
 
 3장에서 받은 `HandTrackingSnapshot`을 RealityKit 시각화 계층에 전달해 왼손 관절은 파란 구체, 오른손 관절은 분홍 구체로 표현한다.
 
-이 장은 3장에서 `HandTrackingService`, `HandTrackingSnapshot`과 `HandJointSample`이 준비됐다고 가정한다. 여기서는 ARKit 세션을 다시 설명하지 않고, 제공된 snapshot을 RealityKit 장면에 어떻게 반영할지에 집중한다. 코드 조각은 위에 연결한 PR #8 기준 구현에서 가져왔다.
+이 장은 3장에서 `HandTrackingService`, `HandTrackingSnapshot`과 `HandJointSample`이 준비됐다고 가정한다. 여기서는 ARKit 세션을 다시 설명하지 않고, 제공된 snapshot을 RealityKit 장면에 어떻게 반영할지에 집중한다.
 
 이 장을 마치면 다음을 설명할 수 있다.
 
@@ -37,7 +33,7 @@ HandTrackingProvider.anchorUpdates
 
 ## 1단계: 관절 Entity를 미리 만든다
 
-관절 update가 들어올 때마다 Entity를 새로 만들면 객체 생성과 장면 트리 변경이 매 프레임 반복된다. 현재 Spike는 초기화 시 좌우 손의 관절 Entity를 한 번 만들고, 처음에는 모두 숨겨 둔다.
+관절 update가 들어올 때마다 Entity를 새로 만들면 객체 생성과 장면 트리 변경이 매 프레임 반복된다. 초기화 시 좌우 손의 관절 Entity를 한 번 만들고, 처음에는 모두 숨겨 둔다.
 
 ```swift
 private func createJointEntities() {
@@ -61,7 +57,7 @@ private func createJointEntities() {
 
 `rootEntity`는 좌우 손의 모든 관절 Entity를 묶는 컨테이너다. `RealityView`에는 이 root만 한 번 추가하고, 이후에는 이미 연결된 자식 Entity를 찾아 갱신한다. 관절별 Entity를 매 update마다 장면에 직접 추가하거나 제거하지 않는 이유도 여기에 있다.
 
-구체 반지름 `0.008`은 RealityKit의 미터 단위로 8mm다. 실제 관절 크기를 재현한 값이 아니라, 손을 지나치게 가리지 않으면서 관절 위치를 구분하기 위한 Spike의 디버그 시작값이다. 다른 시야 거리나 표시 목적에서는 크기를 다시 조정해야 한다.
+구체 반지름 `0.008`은 RealityKit의 미터 단위로 8mm다. 실제 관절 크기를 재현한 값이 아니라, 손을 지나치게 가리지 않으면서 관절 위치를 구분하기 위한 튜토리얼의 시작값이다. 다른 시야 거리나 표시 목적에서는 크기를 다시 조정해야 한다.
 
 `jointEntities`는 손 방향과 관절 이름을 키로 사용한다.
 
@@ -76,7 +72,7 @@ right + thumbTip  → 오른손 엄지 끝 구체
 
 ## 2단계: 관절 transform을 월드 공간으로 바꾼다
 
-ARKit의 `HandAnchor.originFromAnchorTransform`은 손 Anchor를 월드 원점 기준으로 표현한다. `Joint.anchorFromJointTransform`은 관절을 Hand Anchor 기준으로 표현한다. 따라서 현재 Spike는 두 행렬을 다음 순서로 곱한다.
+ARKit의 `HandAnchor.originFromAnchorTransform`은 손 Anchor를 월드 원점 기준으로 표현한다. `Joint.anchorFromJointTransform`은 관절을 Hand Anchor 기준으로 표현한다. 따라서 두 행렬을 다음 순서로 곱한다.
 
 ```swift
 let originFromJointTransform =
@@ -123,7 +119,7 @@ RealityKit의 [`setTransformMatrix(_:relativeTo:)`](https://developer.apple.com/
 
 ## 4단계: 이번 snapshot에 없는 관절을 숨긴다
 
-이전 프레임에서 보이던 Entity를 그대로 두면 추적이 끊겼을 때 구체가 공간에 남아 보일 수 있다. 현재 snapshot에서 갱신한 관절 이름을 모은 뒤, 포함되지 않은 Entity를 숨긴다.
+이전 프레임에서 보이던 Entity를 그대로 두면 추적이 끊겼을 때 구체가 공간에 남아 보일 수 있다. 이번 snapshot에서 갱신한 관절 이름을 모은 뒤, 포함되지 않은 Entity를 숨긴다.
 
 ```swift
 for (jointName, entity) in jointEntities[side] ?? [:]
@@ -141,9 +137,9 @@ guard let hand, hand.isTracked else {
 }
 ```
 
-현재 PR #8의 `HandTrackingService`는 `Joint.isTracked == false`인 관절을 snapshot에서 제외한다. 따라서 시각화 계층은 누락된 관절을 임의 위치에 그리지 않는다.
+이 예제의 `HandTrackingService`는 `Joint.isTracked == false`인 관절을 snapshot에서 제외한다. 따라서 시각화 계층은 누락된 관절을 임의 위치에 그리지 않는다.
 
-> 주의: 이것은 현재 Spike의 보수적인 시각화 정책이다. Apple의 [`Joint.isTracked`](https://developer.apple.com/documentation/arkit/handskeleton/joint/istracked) 문서는 가림 등으로 `false`여도 ARKit이 추정 transform을 제공할 수 있으며, 관절 가림이 예상되는 제스처에서는 이 값을 무조건 제외하지 말라고 안내한다. 실제 앱에서 추정 transform을 사용할지, 숨길지, 잠깐 유지할지는 실기기 로그와 사용 목적을 확인한 뒤 결정해야 한다.
+> 주의: 이 예제는 보수적으로 관절을 숨기는 정책을 사용한다. Apple의 [`Joint.isTracked`](https://developer.apple.com/documentation/arkit/handskeleton/joint/istracked) 문서는 가림 등으로 `false`여도 ARKit이 추정 transform을 제공할 수 있으며, 관절 가림이 예상되는 제스처에서는 이 값을 무조건 제외하지 말라고 안내한다. 실제 앱에서 추정 transform을 사용할지, 숨길지, 잠깐 유지할지는 사용 목적에 맞춰 결정한다.
 
 ## 5단계: RealityView에 시각화 root를 연결한다
 
@@ -180,24 +176,13 @@ originFromJointTransform
 └─ 5장: translation → SIMD3<Float> 특징 계산 입력
 ```
 
-## 확인 방법
-
-### 실기기 없이 확인한 범위
-
-- PR #8 커밋 `d3b57bd`의 코드 구조와 이 장의 코드 조각을 대조했다.
-- 관절 Entity의 생성과 갱신이 분리되어 있음을 확인했다.
-- 월드 transform 곱 순서와 `relativeTo: nil`의 의미를 Apple 공식 문서와 대조했다.
-- 추적되지 않은 손과 누락 관절을 임의 위치에 표시하지 않는 현재 정책을 확인했다.
-
-### Apple Vision Pro에서 확인할 범위
+## Apple Vision Pro에서 확인하기
 
 - 실제 왼손과 오른손에 각 색상의 관절 구체가 표시되는지
 - 손의 이동과 회전을 구체가 올바르게 따라오는지
 - 좌표 변환 결과가 기대한 월드 위치에 놓이는지
 - 빠른 움직임과 손 가림에서 Entity가 남거나 튀지 않는지
 - `Joint.isTracked == false`일 때 숨김과 추정 transform 사용 중 어느 정책이 더 자연스러운지
-
-이 항목들은 이 장의 문서 작성 완료와 별개인 **실기기 미검증 항목**이다.
 
 ## 문제 해결
 
@@ -209,7 +194,7 @@ originFromJointTransform
 
 ### 추적이 끊긴 뒤 구체가 남는다
 
-- 현재 snapshot에 없던 관절 Entity를 `isEnabled = false`로 바꾸는지 확인한다.
+- 이번 snapshot에 없던 관절 Entity를 `isEnabled = false`로 바꾸는지 확인한다.
 - 손 전체가 추적되지 않을 때 해당 손의 모든 Entity를 숨기는지 확인한다.
 
 ### 좌우 손 색상이 바뀐다
@@ -222,7 +207,7 @@ originFromJointTransform
 - Entity 생성과 매 프레임 갱신의 책임을 구분할 수 있다.
 - 관절 월드 transform의 곱 순서를 설명할 수 있다.
 - `relativeTo: nil`이 월드 공간을 의미함을 설명할 수 있다.
-- 현재 추적 손실 정책과 실기기에서 다시 결정할 정책을 구분할 수 있다.
+- 추적 손실 시 관절을 숨기는 정책을 설명할 수 있다.
 - 시각화에 사용한 좌표가 5장 Pose Features 입력으로 이어지는 흐름을 설명할 수 있다.
 
-이전: 3장 양손 추적 시작(작성 예정) · 다음: 5장 Pose Features로 이어가기(작성 예정)
+이전: [3장 양손 추적 시작](./03-starting-hand-tracking.md) · 다음: [5장 Pose Features로 이어가기](./05-building-pose-features.md)

@@ -13,5 +13,8 @@ struct ImmersiveView: View {
         .task {
             await handTracking.start()
         }
+        .onDisappear {
+            handTracking.stop()
+        }
     }
 }

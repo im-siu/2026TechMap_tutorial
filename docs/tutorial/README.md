@@ -1,9 +1,6 @@
-# Hand Jutsu 1차 튜토리얼 초안
+# Hand Jutsu 튜토리얼 Markdown 안내
 
-> 상태: 초안
-> 관련 이슈: #9
-
-이 폴더는 Hand Jutsu 1차 튜토리얼의 문서 구조를 잡기 위한 공간이다. 현재 목표는 완성된 교재를 한 번에 만드는 것이 아니라, 8월 14일까지 팀이 함께 검토할 수 있는 본편 흐름과 검증 상태를 정리하는 것이다.
+이 폴더는 DocC 튜토리얼과 같은 1~5장 학습 순서를 Markdown으로 안내한다. 각 장에는 학습자가 수행할 행동과 기기별 확인 범위를 적는다.
 
 ## 튜토리얼 목표
 
@@ -27,27 +24,15 @@ Immersive Space 열기
 - RealityKit, ARKit, 3D 좌표 변환과 Hand Tracking은 처음 접해도 되는 사람
 - Apple Vision Pro가 없어도 프로젝트 구조와 Pose 판정 로직 일부를 따라가고 싶은 사람
 
-## 1차 튜토리얼 범위
+## 학습 순서
 
-| 장 | 제목 | 목표 | 검증 상태 |
+| 장 | 제목 | 목표 | 확인 환경 |
 | --- | --- | --- | --- |
-| 1 | Hand Jutsu 시작하기 | 프로젝트 목표와 visionOS 앱 구조 이해 | 문서 초안 |
-| 2 | 첫 Immersive Space | Window와 Immersive Space의 역할 이해 | Simulator 검증 가능 |
-| 3 | 양손 추적 시작 | `HandTrackingProvider`와 `ARKitSession` 생명주기 이해 | 실기기 검증 필요 |
-| 4 | 관절을 공간에 그리기 | Hand Anchor와 Joint transform으로 관절 위치 표시 | 실기기 검증 필요 |
-| 5 | Pose Features로 이어가기 | 관절 월드 좌표를 손 모양 판정 재료로 변환 | 합성 좌표 검증, 실기기 검증 필요 |
-
-## 현재 문서 구조
-
-현재 `docs/tutorial/`의 3개 문서는 최종 튜토리얼 5장을 그대로 1:1로 나눈 본문이 아니라, 1차 튜토리얼 제작을 위한 묶음 초안이다.
-
-| 현재 문서 | 포괄하는 최종 장 |
-| --- | --- |
-| `01-hand-jutsu-overview.md` | 1장 Hand Jutsu 시작하기 |
-| `02-hand-tracking-flow.md` | 2장 첫 Immersive Space, 3장 양손 추적 시작, 4장 관절을 공간에 그리기 |
-| `03-pose-features-bridge.md` | 5장 Pose Features로 이어가기 |
-
-최종 튜토리얼 본문 작성 단계에서는 필요에 따라 `01`-`05` 구조로 분리한다.
+| 1 | Hand Jutsu 시작하기 | 빈 프로젝트와 기본 Window 시작 | Simulator |
+| 2 | 첫 Immersive Space | Window와 Immersive Space 역할 구분 | Simulator |
+| 3 | 양손 추적 시작 | 권한과 `ARKitSession` 생명주기 이해 | Simulator UI, Apple Vision Pro 손 입력 |
+| 4 | 관절을 공간에 그리기 | Hand Anchor와 Joint transform으로 관절 위치 표시 | Apple Vision Pro |
+| 5 | Pose Features로 이어가기 | 관절 월드 좌표를 손 모양 판정 재료로 변환 | 순수 Swift 테스트, Apple Vision Pro 비교 |
 
 ## 후속 확장으로 분리할 내용
 
@@ -61,12 +46,13 @@ Immersive Space 열기
 ## 문서 목록
 
 - [01. Hand Jutsu 시작하기](./01-hand-jutsu-overview.md)
-- [02. Hand Tracking 흐름](./02-hand-tracking-flow.md)
-- [03. Pose Features 연결 흐름](./03-pose-features-bridge.md)
+- [02. 첫 Immersive Space](./02-creating-immersive-space.md)
+- [03. 양손 Hand Tracking 시작하기](./03-starting-hand-tracking.md)
+- [04. 관절을 공간에 그리기](./04-joint-visualization.md)
+- [05. Pose Features로 이어가기](./05-building-pose-features.md)
 
-## 검증 상태를 쓰는 규칙
+## 기기별 확인 원칙
 
-- 빌드 통과, Simulator 실행, Apple Vision Pro 실기기 검증을 구분해서 쓴다.
-- 실기기에서 확인하지 않은 동작은 완료된 기능처럼 표현하지 않는다.
-- 합성 좌표 테스트로 확인한 내용과 실제 `HandAnchor` 입력으로 확인해야 할 내용을 분리한다.
-- Issue와 PR 댓글에서 확인된 내용은 문서에 반영하되, 확정되지 않은 판단은 주의사항으로 남긴다.
+- Simulator와 Apple Vision Pro에서 가능한 동작을 구분한다.
+- 실제 Hand Anchor가 필요한 절차는 Apple Vision Pro에서 안내한다.
+- 합성 좌표 테스트와 실제 손 입력에서 관찰할 내용을 구분한다.
