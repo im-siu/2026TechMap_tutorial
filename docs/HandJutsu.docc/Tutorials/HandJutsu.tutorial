@@ -1,6 +1,6 @@
 @Tutorials(name: "Hand Jutsu") {
     @Intro(title: "Hand Jutsu 튜토리얼") {
-        SwiftUI, RealityKit, ARKit을 사용해 Apple Vision Pro에서 양손을 추적하고, 손 모양 판정에 필요한 관절 데이터를 만드는 과정을 배운다.
+        SwiftUI, RealityKit, ARKit을 사용해 Apple Vision Pro에서 양손을 추적하고, 손깍지 두 손가락 수인을 판정하기 위한 관절 데이터를 만드는 과정을 배운다.
 
         프로젝트 생성, Signing, 실행 환경은 <doc:GettingStarted>에서 먼저 확인한다.
     }
@@ -14,5 +14,6 @@
         @TutorialReference(tutorial: "doc:03-Starting-Hand-Tracking")
         @TutorialReference(tutorial: "doc:04-Visualizing-Hand-Joints")
         @TutorialReference(tutorial: "doc:05-Building-Pose-Features")
+        @TutorialReference(tutorial: "doc:06-Defining-Interlocked-Two-Finger-Seal")
     }
 }

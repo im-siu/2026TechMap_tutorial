@@ -92,6 +92,25 @@ const highlightLinesByFile = {
   "05-05-HandTrackingPoseFeatureAdapter.swift": range(1, 26),
   "05-06-PoseFeatureVerificationRecord.swift": range(1, 83),
   "05-07-BilateralPinchPoseTests.swift": range(1, 155),
+  "06-01-SealRequirements.swift": range(3, 29),
+  "06-02-SealFingerChains.swift": range(31, 45),
+  "06-03-HandFeatureModel.swift": range(3, 27),
+  "06-04-HandFeatureAvailability.swift": [
+    ...range(29, 51),
+    ...range(55, 87),
+  ],
+  "06-05-HandFeatureMetrics.swift": range(53, 83),
+  "06-06-FingerScore.swift": [
+    ...range(85, 90),
+    ...range(125, 163),
+  ],
+  "06-07-SealEvaluationInput.swift": range(3, 41),
+  "06-08-SealEvaluationRules.swift": range(53, 79),
+  "06-09-SealEvaluationTests.swift": [
+    ...range(5, 16),
+    ...range(40, 50),
+    ...range(64, 82),
+  ],
 };
 
 function range(start, end) {

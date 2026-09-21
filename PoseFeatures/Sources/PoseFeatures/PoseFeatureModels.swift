@@ -8,10 +8,19 @@ public enum HandSide: String, CaseIterable, Codable, Sendable {
 public enum HandJoint: String, CaseIterable, Codable, Sendable {
     case wrist
     case thumbTip
-    case indexFingerTip
-    case middleFingerKnuckle
     case thumbKnuckle
     case indexFingerKnuckle
+    case indexFingerIntermediateBase
+    case indexFingerIntermediateTip
+    case indexFingerTip
+    case middleFingerKnuckle
+    case middleFingerIntermediateBase
+    case middleFingerIntermediateTip
+    case middleFingerTip
+    case ringFingerKnuckle
+    case ringFingerTip
+    case littleFingerKnuckle
+    case littleFingerTip
     case forearmWrist
 }
 
@@ -32,10 +41,12 @@ public enum PoseEvaluationStatus: String, Codable, Sendable {
     case matched
     case notMatched
     case notEvaluable
+    case candidate
 }
 
 public enum TargetPose: String, Codable, Sendable {
     case bilateralPinch
+    case interlockedTwoFingerSeal
 }
 
 public struct HandPoseInput: Sendable {
