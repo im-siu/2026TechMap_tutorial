@@ -1,0 +1,83 @@
+@Tutorial(time: 35) {
+    @Intro(title: "안정적으로 수인 인식하기") {
+        6장의 단일 프레임 `candidate` 결과를 시간 기반 상태 머신으로 안정화한다.
+
+        이 장에서는 수인이 일정 시간 유지됐을 때만 `recognized`로 전환하고, 짧은 관절 누락과 수인 해제를 구분한다. 불·물·빛 효과를 만드는 일은 다음 장의 책임으로 남긴다.
+    }
+
+    @Section(title: "시간 기반 인식 결과 정의하기") {
+        @ContentAndMedia {
+            정적 Pose 평가는 현재 프레임만 설명한다. `GestureClassifier`는 그 결과와 단조롭게 증가하는 시간을 입력으로 받아 `idle`, `candidate`, `recognized`, `lost`, `cooldown` 상태를 만든다.
+
+            `recognitionStarted`와 `recognitionEnded`는 상태 자체와 분리된 한 번성 이벤트다. 다음 장의 효과는 이 이벤트를 받아 시작하거나 정리할 수 있지만, 이 장에서는 RealityKit Entity를 만들지 않는다.
+        }
+
+        @Steps {
+            @Step {
+                분류 상태, 조정 가능한 유지·유예·cooldown 시간, 그리고 한 번성 인식 이벤트를 정의한다.
+
+                @Code(name: "GestureClassifierModels.swift", file: "07-01-GestureClassifierModels.swift")
+            }
+        }
+    }
+
+    @Section(title: "후보를 안정된 인식으로 전환하기") {
+        @ContentAndMedia {
+            `candidate`가 처음 들어온 시각을 저장하고, 이후에도 후보가 유지된 시간이 `candidateHoldDuration` 이상일 때만 `recognized`로 전환한다. 그래서 우연히 한 프레임만 수인 모양을 통과한 경우에는 효과를 시작하지 않는다.
+
+            입력 시간은 이전 값보다 작아져도 되돌아가지 않게 정규화한다. 테스트는 실제로 기다리지 않고 원하는 시각을 넣어 전이를 확인할 수 있다.
+        }
+
+        @Steps {
+            @Step {
+                현재 상태와 후보 시작 시각을 저장하고, `idle`에서 첫 `candidate`를 받으면 후보 상태로 전환한다.
+
+                @Code(name: "GestureClassifier.swift", file: "07-02-GestureClassifier-CandidateStart.swift")
+            }
+
+            @Step {
+                후보가 유지된 시간을 비교해 `recognized`와 `recognitionStarted` 이벤트를 만든다.
+
+                @Code(name: "GestureClassifier.swift", file: "07-03-GestureClassifier-CandidateHold.swift")
+            }
+        }
+    }
+
+    @Section(title: "가림과 재발동을 안전하게 처리하기") {
+        @ContentAndMedia {
+            `notEvaluable`은 손깍지에서 자연스럽게 생길 수 있는 짧은 가림이다. 바로 취소하지 않고 `lost` 상태에서 `trackingLossGraceDuration` 동안 관절 복구를 기다린다. 유예 안에 `candidate`가 돌아오면 이전 후보 또는 인식을 복구한다.
+
+            반대로 `notMatched`는 수인을 푼 신호다. 해제가 `releaseConfirmationDuration` 동안 이어질 때만 인식을 끝내고 `cooldown`으로 들어간다. cooldown 중에는 새 후보를 무시하고, 시간이 끝난 다음 입력부터 다시 후보를 받는다.
+        }
+
+        @Steps {
+            @Step {
+                `lost` 상태에서 가림 복구, 유예 만료, 수인 해제를 각각 다르게 처리한다.
+
+                @Code(name: "GestureClassifier.swift", file: "07-04-GestureClassifier-Loss.swift")
+            }
+
+            @Step {
+                인식이 끝나면 cooldown을 시작하고, 상태별 임시 시각을 정리해 다음 인식을 준비한다.
+
+                @Code(name: "GestureClassifier.swift", file: "07-05-GestureClassifier-Cooldown.swift")
+            }
+        }
+    }
+
+    @Section(title: "합성 시간열로 상태 전이 검증하기") {
+        @ContentAndMedia {
+            순수 Swift 테스트에서는 실제 시간이나 Apple Vision Pro가 필요 없다. 각 프레임의 `PoseEvaluationStatus`와 시각을 직접 넣어 후보 유지, 가림 유예, 해제 확인, cooldown을 재현한다.
+
+            실제 기기에서는 손깍지 수인을 약 0.3초 유지했을 때만 인식되는지, 약지·소지 가림에서 짧게 끊기지 않는지, 수인을 풀거나 관절 누락이 길어졌을 때 안전하게 끝나는지 확인한다. 이 장의 시작값은 실기기 측정으로 조정해야 한다.
+        }
+
+        @Steps {
+            @Step {
+                후보 유지, 짧은 가림 복구, 유예 만료, 해제 확인, cooldown 전이를 합성 시간으로 테스트한다.
+
+                @Code(name: "GestureClassifierTests.swift", file: "07-06-GestureClassifierTests.swift")
+            }
+        }
+    }
+}

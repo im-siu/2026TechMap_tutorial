@@ -15,6 +15,12 @@ export const codeListings = [
   { listingPath: "docs/HandJutsu.docc/Resources/06-07-SealEvaluationInput.swift", sourcePath: "PoseFeatures/Sources/PoseFeatures/InterlockedTwoFingerSeal+Evaluation.swift", ranges: [[1, 41], [78, 79]] },
   { listingPath: "docs/HandJutsu.docc/Resources/06-08-SealEvaluationRules.swift", sourcePath: "PoseFeatures/Sources/PoseFeatures/InterlockedTwoFingerSeal+Evaluation.swift" },
   { listingPath: "docs/HandJutsu.docc/Resources/06-09-SealEvaluationTests.swift", sourcePath: "PoseFeatures/Tests/PoseFeaturesTests/InterlockedTwoFingerSealTests.swift" },
+  { listingPath: "docs/HandJutsu.docc/Resources/07-01-GestureClassifierModels.swift", sourcePath: "PoseFeatures/Sources/PoseFeatures/GestureClassifierModels.swift" },
+  { listingPath: "docs/HandJutsu.docc/Resources/07-02-GestureClassifier-CandidateStart.swift", sourcePath: "PoseFeatures/Sources/PoseFeatures/GestureClassifier.swift", ranges: [[1, 7], [12, 32], [71, 80], [202, 212]] },
+  { listingPath: "docs/HandJutsu.docc/Resources/07-03-GestureClassifier-CandidateHold.swift", sourcePath: "PoseFeatures/Sources/PoseFeatures/GestureClassifier.swift", ranges: [[1, 7], [12, 40], [46, 46], [71, 80], [167, 170], [202, 212]] },
+  { listingPath: "docs/HandJutsu.docc/Resources/07-04-GestureClassifier-Loss.swift", sourcePath: "PoseFeatures/Sources/PoseFeatures/GestureClassifier.swift", ranges: [[1, 10], [12, 62], [71, 175], [202, 212]] },
+  { listingPath: "docs/HandJutsu.docc/Resources/07-05-GestureClassifier-Cooldown.swift", sourcePath: "PoseFeatures/Sources/PoseFeatures/GestureClassifier.swift" },
+  { listingPath: "docs/HandJutsu.docc/Resources/07-06-GestureClassifierTests.swift", sourcePath: "PoseFeatures/Tests/PoseFeaturesTests/GestureClassifierTests.swift" },
 ];
 
 export function sourceListing(source, ranges) {

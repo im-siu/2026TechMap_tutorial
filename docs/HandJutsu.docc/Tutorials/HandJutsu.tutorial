@@ -16,5 +16,6 @@
         @TutorialReference(tutorial: "doc:04-Visualizing-Hand-Joints")
         @TutorialReference(tutorial: "doc:05-Building-Pose-Features")
         @TutorialReference(tutorial: "doc:06-Defining-Interlocked-Two-Finger-Seal")
+        @TutorialReference(tutorial: "doc:07-Stabilizing-Seal-Recognition")
     }
 }
