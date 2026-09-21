@@ -18,6 +18,10 @@ Xcode에서 **File > New > Project > visionOS > App**을 선택한다. Interface
 
 프로젝트를 만든 뒤 target의 **Signing & Capabilities**에서 Team을 선택한다. Simulator에서는 기본 Window를 빌드해 흐름을 확인하고, Apple Vision Pro에 설치할 때는 현재 계정과 기기에 맞는 Team·Bundle Identifier가 필요하다.
 
+### 참조: 기존 프로젝트를 전환하는 경우
+
+새 프로젝트라면 처음부터 **visionOS > App**을 선택하면 된다. 이미 iOS 또는 macOS App으로 시작한 경우에만 target의 **General > Supported Destinations**에서 **Apple Vision**을 추가하고, **Build Settings > Application Scene Manifest (Generation)**의 visionOS 적용값이 Debug와 Release 모두 `Yes`인지 확인한다. `Any iOS SDK` 조건을 `Any SDK`로 일괄 변경하거나 Info 탭에 manifest를 직접 추가할 필요는 없다.
+
 생성 직후에는 `HandJutsuApp.swift`, `ContentView.swift`, `Assets.xcassets`만 확인한다. 2장에서 앞의 두 Swift 파일을 바꾸고 새 Space 관련 파일을 추가한다.
 
 이 문서는 Xcode 27.0 (27A266a), visionOS Simulator 26.5를 기준으로 작성했다.

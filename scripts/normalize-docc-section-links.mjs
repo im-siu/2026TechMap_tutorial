@@ -259,6 +259,16 @@ body[data-color-scheme="dark"] {
   --color-code-line-highlight: rgba(56, 189, 248, 0.24);
   --color-code-line-highlight-border: #38bdf8;
 }
+
+/* Keep Korean words and particles together in tutorial prose and Step cards. */
+#app-main h1,
+#app-main h2,
+#app-main h3,
+#app-main p,
+#app-main .step {
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
 `, "utf8");
 
   await writeFile(jsPath, `(function () {

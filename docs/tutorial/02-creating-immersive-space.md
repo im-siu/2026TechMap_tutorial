@@ -15,7 +15,7 @@
 3. 기본 생성 `ContentView.swift`를 교체해 Open/Close 버튼을 넣는다.
 4. 새 `ImmersiveView.swift` 파일에 빈 RealityKit root entity를 만든다.
 
-`ImmersiveSpace`를 App에 등록해도 자동으로 열리지는 않는다. 앱은 계속 `WindowGroup`으로 시작하며, `openImmersiveSpace(id:)`가 같은 id를 요청할 때만 공간이 열린다.
+`ImmersiveSpace`를 App에 등록해도 자동으로 열리지는 않는다. 앱은 계속 `ContentView`를 담은 `WindowGroup`으로 시작하며, `openImmersiveSpace(id:)`가 같은 id를 요청할 때 `ImmersiveView`를 담은 Space가 열린다.
 
 ## Simulator에서 확인하기
 
@@ -23,7 +23,7 @@
 - 버튼을 누르면 `Close Space` 상태가 되고 Immersive Space가 열린다.
 - `Close Space`를 누르면 기본 Window 흐름으로 돌아온다.
 
-빈 `ImmersiveView`는 아직 별도 3D 콘텐츠를 보여 주지 않는다. 손 추적은 다음 장에서 추가한다.
+이 확인 단계에서는 코드를 더 수정하지 않는다. 빈 `ImmersiveView`는 아직 별도 3D 콘텐츠를 보여 주지 않는다. 손 추적은 다음 장에서 추가한다.
 
 상세 코드와 단계별 설명은 [DocC 2장](../HandJutsu.docc/Tutorials/HandJutsu/02-Creating-Immersive-Space.tutorial)에서 확인한다.
 

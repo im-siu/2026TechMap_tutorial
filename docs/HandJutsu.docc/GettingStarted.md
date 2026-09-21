@@ -35,6 +35,18 @@ Xcode에서 **File > New > Project**를 선택하고, **visionOS > App** 템플�
 | Language | Swift | 튜토리얼 코드와 같은 언어다. |
 | Initial Scene | Window | 앱은 먼저 기본 Window로 시작하고, 2장에서 필요한 때 Immersive Space를 연다. |
 
+### 참조: 기존 프로젝트를 visionOS로 바꾸는 경우
+
+이 튜토리얼의 기본 경로는 새 프로젝트를 처음부터 **visionOS > App**으로 만드는 것이다. 이 경우 Xcode가 `Application Scene Manifest (Generation)`을 활성화하므로, Immersive Space를 위해 Info 설정을 따로 만들 필요가 없다.
+
+이미 iOS 또는 macOS App으로 시작한 프로젝트만 아래를 확인한다.
+
+1. target의 General 화면에서 `Apple Vision`을 추가한다. `Apple Vision (Designed for iPad)`는 호환 실행용이므로 이 튜토리얼의 네이티브 visionOS 대상이 아니다.
+2. target의 Build Settings에서 `Scene Manifest`를 검색한다. Debug와 Release에서 visionOS에 적용되는 생성 설정 값이 `Yes`인지 확인한다.
+3. 기존의 `Any iOS SDK` 또는 `Any iOS Simulator SDK` 조건을 한꺼번에 `Any SDK`로 바꾸지 않는다. 기존 플랫폼용 조건을 유지한 채 visionOS에 적용되는 값만 확인한다.
+
+이 설정은 빌드할 때 `UIApplicationSceneManifest`를 생성한다. Generation을 사용하는 target에서는 Info 탭에서 manifest를 직접 추가해도 생성 설정이 그 값을 덮어쓸 수 있다.
+
 ## 2. Team과 Signing 확인하기
 
 프로젝트를 만든 뒤 target의 **Signing & Capabilities**에서 Team을 선택한다.
