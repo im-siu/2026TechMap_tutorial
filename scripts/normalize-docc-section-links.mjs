@@ -269,6 +269,12 @@ body[data-color-scheme="dark"] {
   word-break: keep-all;
   overflow-wrap: normal;
 }
+
+/* Keep the tutorial collection's introductory artwork secondary to its title. */
+section.hero > .asset:nth-of-type(2) {
+  width: 50%;
+  margin-inline: auto;
+}
 `, "utf8");
 
   await writeFile(jsPath, `(function () {
