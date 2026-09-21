@@ -134,6 +134,23 @@ const highlightLinesByFile = {
     ...range(177, 200),
   ],
   "07-06-GestureClassifierTests.swift": range(4, 107),
+  "08-01-SpellStateMachineModels.swift": range(3, 38),
+  "08-02-SpellStateMachine-Preparing.swift": [
+    ...range(3, 7),
+    ...range(9, 33),
+    ...range(38, 54),
+  ],
+  "08-03-SpellStateMachine-Release.swift": [
+    ...range(7, 8),
+    ...range(37, 55),
+    ...range(68, 82),
+  ],
+  "08-04-SpellEffectOrigin.swift": range(3, 14),
+  "08-05-SpellEffectModels.swift": range(3, 71),
+  "08-06-SpellEffectController-Skeleton.swift": range(3, 39),
+  "08-07-SpellEffectController-Policy.swift": range(46, 113),
+  "08-08-SpellStateMachineTests.swift": range(4, 76),
+  "08-09-SpellEffectControllerTests.swift": range(4, 97),
 };
 
 function range(start, end) {

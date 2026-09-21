@@ -17,5 +17,6 @@
         @TutorialReference(tutorial: "doc:05-Building-Pose-Features")
         @TutorialReference(tutorial: "doc:06-Defining-Interlocked-Two-Finger-Seal")
         @TutorialReference(tutorial: "doc:07-Stabilizing-Seal-Recognition")
+        @TutorialReference(tutorial: "doc:08-Triggering-Spatial-Spell-Effects")
     }
 }
