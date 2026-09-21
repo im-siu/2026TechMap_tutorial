@@ -4,9 +4,11 @@
 
 ## 이 장에서 만들 결과
 
-이 장에서는 7장의 주문 상태를 받아 손 사이에 간단한 빛 구체를 표시한다. 빛 구체를 기준 효과로 완성한 뒤, 같은 제어 구조에서 불·물 스타일을 교체할 수 있게 설계한다.
+이 장에서는 7장의 `GestureClassifier` 이벤트를 주문 상태로 바꾸고, 손 사이의 간단한 빛 구체가 소비할 프레젠테이션 값을 만든다. 빛 효과를 기준으로 설계한 뒤, 같은 제어 구조에서 불·물 스타일을 교체할 수 있게 한다. 실제 RealityKit Entity 연결은 후속 앱 통합 단계에서 진행한다.
 
-이 장의 목표는 사실적인 불이나 물을 만드는 것이 아니다. 손 수인 인식, 상태 전환, RealityKit Entity 생명주기가 서로 직접 얽히지 않게 연결하는 것이다.
+단계별 코드와 합성 시간열 검증은 [DocC 8장](../HandJutsu.docc/Tutorials/HandJutsu/08-Triggering-Spatial-Spell-Effects.tutorial)에서 확인한다.
+
+이 장의 목표는 사실적인 불이나 물을 만드는 것이 아니다. 손 수인 인식, 상태 전환, 효과 프레젠테이션이 서로 직접 얽히지 않게 연결하는 것이다. 실제 RealityKit Entity 연결은 앱 통합 단계에서 진행한다.
 
 이 장을 마치면 다음을 설명할 수 있다.
 
@@ -21,19 +23,21 @@
 ```text
 GestureClassifier
 → SpellStateMachine
-→ SpellEffectState
+→ SpellState
 → SpellEffectController
-→ RealityKit Entity 갱신
+→ SpellEffectPresentation
+→ RealityKit Entity 갱신 (후속 앱 통합)
 ```
 
-`SpellEffectController`는 수인을 다시 판정하지 않는다. 현재 주문 상태, 충전 진행도, 효과의 기준 위치만 입력으로 받는다. 손 인식 규칙을 바꾸더라도 효과 Entity 코드를 고치지 않게 하는 경계다.
+`SpellEffectController`는 수인을 다시 판정하지 않는다. 현재 주문 상태와 효과의 기준 위치를 입력으로 받아 표시 여부·위치·크기·스타일을 담은 `SpellEffectPresentation`을 만든다. 손 인식 규칙을 바꾸더라도 후속 RealityKit Entity 어댑터 코드를 고치지 않게 하는 경계다.
 
 | 책임 | 담당 타입 |
 | --- | --- |
 | 양손 관절 수집과 좌표 변환 | `HandTrackingService` |
 | 손깍지 수인 feature와 정적 판정 | `InterlockedTwoFingerSealFeature` / `GestureClassifier` |
 | 준비·충전·발동·대기 전이 | `SpellStateMachine` |
-| 빛·불·물 Entity 생성과 갱신 | `SpellEffectController` |
+| 표시 여부·위치·크기·스타일 결정 | `SpellEffectController` |
+| RealityKit Entity 생성과 갱신 | 후속 앱 통합 |
 
 ## 손 사이 기준점 만들기
 
@@ -45,26 +49,26 @@ left index/middle tip ─┐
 right index/middle tip ─┘
 ```
 
-네 tip 중 필요한 위치가 부족하면 새 위치를 계산하지 않는다. 효과가 충전 중이라면 7장의 짧은 유예 시간 동안 마지막 신뢰 가능한 위치를 유지할 수 있지만, 유예가 끝나면 효과를 숨기고 상태 머신에 취소를 알린다. 임의의 영점 좌표에 효과를 보내지 않는다.
+네 tip 중 필요한 위치가 부족하면 새 위치를 계산하지 않는다. 효과가 충전 중이라면 `SpellEffectController`가 짧은 유예 시간 동안 마지막 신뢰 가능한 위치를 유지하지만, 유예가 끝나면 프레젠테이션을 숨긴다. 인식 상태의 취소는 7장의 `GestureClassifier` 입력이 담당한다. 임의의 영점 좌표에 효과를 보내지 않는다.
 
-## 빛 구체를 기준 효과로 만들기
+## 빛 구체를 기준 프레젠테이션으로 만들기
 
-처음에는 다음 세 상태만 화면에 표현한다.
+처음에는 다음 상태를 프레젠테이션 값으로 표현한다. 앱 통합에서는 이 값을 하나의 빛 구체 Entity에 적용한다.
 
-| 주문 상태 | 빛 구체 표현 | 목적 |
+| 주문 상태 | 프레젠테이션 값 | 앱 통합 시 표현 |
 | --- | --- | --- |
-| `preparing` | 작고 옅은 구체 | 수인 후보임을 알려 줌 |
-| `charging` | 충전 진행도에 따라 커지고 밝아지는 구체 | 수인이 안정적으로 인식됐음을 보여 줌 |
-| `releasing` | 빠르게 커진 뒤 사라지거나 앞으로 이동 | 발동 피드백 |
-| `idle` / `cooldown` | 숨김 | 이전 효과가 남지 않게 함 |
+| `preparing` | 작은 scale, visible | 작고 옅은 구체 |
+| `charging` | 큰 scale, visible | 충전된 빛 구체 |
+| `releasing` | 가장 큰 scale, visible | 방출 피드백 |
+| `idle` / `cooldown` | hidden | 이전 효과가 남지 않게 함 |
 
-Entity는 처음 필요할 때 한 번 만들고 root Entity에 추가한다. 이후 프레임에서는 위치, 크기, 재질 파라미터, `isEnabled`만 갱신한다.
+`SpellEffectController`는 Entity 어댑터가 소비할 `SpellEffectPresentation`을 반환한다. 후속 앱 통합에서 Entity는 처음 필요할 때 한 번 만들고 root Entity에 추가한다. 이후 프레임에서는 위치, 크기, 재질 파라미터, `isEnabled`만 갱신한다.
 
 ```text
-createIfNeeded()
-→ update(position, chargeProgress, style)
-→ release()
-→ resetOrHide()
+SpellEffectController.update(state, origin, style)
+→ SpellEffectPresentation
+→ Entity adapter update (후속 앱 통합)
+→ SpellEffectController.reset()
 ```
 
 손 추적 update마다 새 구체나 새 particle Entity를 만들면 장면 트리가 커지고, 추적이 끊겼을 때 이전 효과도 남기 쉽다. 생성과 갱신을 분리하면 `cooldown` 또는 추적 손실에서 같은 Entity를 확실하게 숨길 수 있다.
@@ -83,7 +87,7 @@ createIfNeeded()
 
 ## 안전한 종료 정책
 
-다음 상황에서는 효과가 남지 않도록 항상 `resetOrHide()`를 호출한다.
+다음 상황에서는 현재 프레젠테이션을 숨기고, 앱 통합에서는 `SpellEffectController.reset()` 뒤 Entity를 숨긴다.
 
 - Immersive Space가 닫힘
 - Hand Tracking task가 취소됨
@@ -95,7 +99,7 @@ createIfNeeded()
 
 ## 확인 범위
 
-Simulator에서는 상태 입력에 따라 구체가 생성·갱신·숨김되는 코드 구조와, 충전 진행도에 따른 크기 변화를 확인한다. 실제 손 사이 위치, 자연스러운 시차, 빠른 손 이동과 가림 중 효과 위치는 Apple Vision Pro에서 확인해야 한다.
+순수 Swift 테스트에서는 상태 입력에 따른 프레젠테이션 값, 기준점 유예와 숨김 정책을 확인한다. 후속 앱 통합에서는 Simulator로 Entity 생성·갱신·숨김 구조를 확인하고, 실제 손 사이 위치·자연스러운 시차·빠른 손 이동과 가림 중 효과 위치는 Apple Vision Pro에서 확인해야 한다.
 
 Apple Vision Pro에서는 다음을 관찰한다.
 
@@ -113,7 +117,7 @@ Apple Vision Pro에서는 다음을 관찰한다.
 
 ### 효과가 프레임마다 깜빡인다
 
-7장의 `matched` 상태와 가림 유예가 효과 입력으로 전달되는지 확인한다. `candidate` 프레임마다 Entity를 만들고 제거하지 않는다.
+7장의 `recognized` 이벤트와 가림 유예가 효과 입력으로 전달되는지 확인한다. `candidate` 프레임마다 Entity를 만들고 제거하지 않는다.
 
 ### 손을 내린 뒤 효과가 남는다
 
@@ -125,6 +129,6 @@ tracking task 취소, Immersive Space 종료, `idle` 전환 모두에서 같은 
 - 손 사이 기준점을 계산하고 누락 입력을 안전하게 처리하는 정책을 설명할 수 있다.
 - Entity 생성·갱신·숨김을 분리해야 하는 이유를 설명할 수 있다.
 - 빛 효과를 기준으로 불·물 스타일을 확장하는 방법을 설명할 수 있다.
-- Simulator 확인 범위와 Apple Vision Pro 검증 범위를 구분할 수 있다.
+- 순수 Swift 테스트, 앱 통합 확인, Apple Vision Pro 검증 범위를 구분할 수 있다.
 
 이전: [7장 안정적으로 수인 인식하기](./07-recognizing-the-seal-reliably.md)

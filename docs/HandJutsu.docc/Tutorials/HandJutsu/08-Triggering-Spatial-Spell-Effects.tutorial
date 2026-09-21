@@ -1,0 +1,101 @@
+@Tutorial(time: 40) {
+    @Intro(title: "수인에 반응하는 공간 효과 만들기") {
+        안정적으로 인식된 손깍지 수인에 반응해 손 사이에 간단한 빛 효과를 연결할 준비를 한다.
+
+        이 장에서는 `GestureClassifier`의 이벤트를 주문 상태로 바꾸고, 효과 Entity가 소비할 순수 Swift 프레젠테이션 값을 만든다. RealityKit Entity를 실제 장면에 연결하는 일과 Apple Vision Pro 검증은 후속 앱 통합의 책임으로 남긴다.
+    }
+
+    @Section(title: "인식 이벤트를 주문 상태로 바꾸기") {
+        @ContentAndMedia {
+            `GestureClassifier`는 수인이 안정적으로 인식된 시작과 끝을 한 번성 이벤트로 알려 준다. `SpellStateMachine`은 이 이벤트를 `idle`, `preparing`, `charging`, `releasing`, `cooldown`으로 변환한다.
+
+            `preparing`은 후보 수인이 보이는 동안의 약한 안내 효과이고, `charging`은 안정 인식이 끝난 뒤의 활성 효과다. `releasing`과 `cooldown`은 같은 수인이 연속으로 효과를 만들지 않도록 분리한다.
+        }
+
+        @Steps {
+            @Step {
+                주문 상태와 조정 가능한 방출·재발동 대기 시간, 그리고 한 번성 상태 전이 이벤트를 정의한다.
+
+                @Code(name: "SpellStateMachineModels.swift", file: "08-01-SpellStateMachineModels.swift")
+            }
+
+            @Step {
+                `candidate`에서 `preparing`으로 들어가고, 안정 인식 이벤트에서만 `charging`으로 바뀌는 뼈대를 만든다.
+
+                @Code(name: "SpellStateMachine.swift", file: "08-02-SpellStateMachine-Preparing.swift")
+            }
+
+            @Step {
+                인식 종료 뒤 `releasing`과 `cooldown`을 거쳐 다시 `idle`로 돌아가도록 시간을 기준으로 전이한다.
+
+                @Code(name: "SpellStateMachine.swift", file: "08-03-SpellStateMachine-Release.swift")
+            }
+        }
+    }
+
+    @Section(title: "손 사이의 안전한 기준점 만들기") {
+        @ContentAndMedia {
+            첫 기준점은 양손 검지·중지 tip 네 개의 평균이다. 이 위치는 `HandPoseInput`만 사용해 계산하므로 ARKit 또는 RealityKit 없이 테스트할 수 있다.
+
+            네 tip 중 하나라도 없으면 기준점 자체를 만들지 않는다. 영점 좌표를 대신 사용하면 손을 가렸을 때 효과가 사용자 앞 원점으로 튀므로, 누락은 `nil`로 전달한다.
+        }
+
+        @Steps {
+            @Step {
+                좌우 손 방향과 네 tip 위치를 확인한 뒤, 모두 있을 때만 평균 기준점을 반환한다.
+
+                @Code(name: "SpellEffectOrigin.swift", file: "08-04-SpellEffectOrigin.swift")
+            }
+        }
+    }
+
+    @Section(title: "효과 프레젠테이션과 생명주기 분리하기") {
+        @ContentAndMedia {
+            이 저장소의 `PoseFeatures` 패키지는 순수 Swift로 유지한다. 따라서 `SpellEffectController`는 RealityKit `Entity`를 직접 만들지 않고, 표시 여부·위치·크기·스타일이 담긴 `SpellEffectPresentation`을 반환한다.
+
+            앱 통합 단계에서는 이 값을 받아 하나의 빛 구체 Entity를 필요할 때 생성하고, 이후 프레임에는 위치·크기·재질과 `isEnabled`만 갱신한다. Entity 생성 정책과 손 인식 규칙이 섞이지 않게 된다.
+        }
+
+        @Steps {
+            @Step {
+                빛·불·물 스타일의 색상과 효과 크기, 그리고 Entity 어댑터가 소비할 프레젠테이션 값을 정의한다. 첫 연결 대상은 `light`다.
+
+                @Code(name: "SpellEffectModels.swift", file: "08-05-SpellEffectModels.swift")
+            }
+
+            @Step {
+                활성 주문 상태에서만 효과를 표시하고, 표시할 위치와 스타일을 반환하는 컨트롤러 뼈대를 만든다.
+
+                @Code(name: "SpellEffectController.swift", file: "08-06-SpellEffectController-Skeleton.swift")
+            }
+
+            @Step {
+                tip 위치가 짧게 사라지면 마지막 신뢰 가능한 위치를 유예 시간만 유지하고, 유예가 끝나거나 `idle`·`cooldown`이 되면 효과를 숨긴다.
+
+                @Code(name: "SpellEffectController.swift", file: "08-07-SpellEffectController-Policy.swift")
+            }
+        }
+    }
+
+    @Section(title: "합성 시간열과 위치 누락 검증하기") {
+        @ContentAndMedia {
+            순수 Swift 테스트는 실제 손이나 시간 대기 없이 주문 상태 전이와 위치 정책을 확인한다. `candidate`와 `recognized` 입력은 준비·충전을 시작하고, 인식 종료는 방출과 cooldown을 거친다.
+
+            실제 Apple Vision Pro에서는 빛 구체가 손 사이에 자연스럽게 보이는지, 빠른 움직임과 가림에서 마지막 위치가 적절한지, Immersive Space 종료 때 Entity가 남지 않는지를 별도로 확인해야 한다.
+        }
+
+        @Steps {
+            @Step {
+                후보·안정 인식·짧은 추적 손실·인식 종료·cooldown 입력을 합성 시간으로 주입해 주문 상태를 검증한다.
+
+                @Code(name: "SpellStateMachineTests.swift", file: "08-08-SpellStateMachineTests.swift")
+            }
+
+            @Step {
+                네 tip 평균, tip 누락, 마지막 위치 유예, 숨김 정책, 스타일 분리를 합성 좌표로 검증한다.
+
+                @Code(name: "SpellEffectControllerTests.swift", file: "08-09-SpellEffectControllerTests.swift")
+            }
+        }
+    }
+}
