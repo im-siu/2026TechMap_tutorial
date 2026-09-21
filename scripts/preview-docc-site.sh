@@ -12,7 +12,7 @@ ln -s "$OUTPUT_PATH" "$PREVIEW_ROOT/$REPOSITORY_NAME"
 
 cat <<EOF
 Serving DocC preview at http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/documentation/handjutsu/
-Getting Started: http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/documentation/hand-jutsu/gettingstarted/
+Tutorial 1: http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/tutorials/hand-jutsu/01-getting-started/
 Tutorials: http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/tutorials/handjutsu/
 Tutorial 2: http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/tutorials/hand-jutsu/02-creating-immersive-space/
 Tutorial 2 Immersive View section: http://127.0.0.1:${PORT}/${REPOSITORY_NAME}/tutorials/hand-jutsu/02-creating-immersive-space/#Immersive-View-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0
