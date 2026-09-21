@@ -1,110 +1,114 @@
-@Tutorial(time: 25) {
-    @Intro(title: "관절 위치를 Pose Feature로 바꾸기") {
-        4장에서 만든 관절 월드 transform을 손 모양 판정에 사용할 수 있는 위치 feature로 바꾼다.
+@Tutorial(time: 30) {
+    @Intro(title: "양손 핀치 Pose Feature 만들기") {
+        4장에서 확인한 관절 위치를 사용해 양손 핀치 수인을 평가할 수 있는 순수 Swift Pose Feature를 만든다.
 
-        이 튜토리얼에서는 제스처 이름을 판정하지 않는다. 먼저 transform에서 위치만 꺼내고, 손목을 기준으로 상대 좌표를 만든 뒤, 다음 장의 판정 로직이 사용할 입력 구조를 준비한다.
+        이번 장의 목표는 연속 프레임 제스처 인식기가 아니다. 한 시점의 관절 입력으로 feature를 만들고, `matched`, `notMatched`, `notEvaluable` 결과를 설명할 수 있게 하는 것이다. 유지 시간, 흔들림 보정, 주문 발동은 다음 단계의 책임으로 남긴다.
     }
 
-    @Section(title: "transform에서 위치 꺼내기") {
+    @Section(title: "첫 번째 대상 수인 정하기") {
         @ContentAndMedia {
-            4장의 `HandJointSample`은 관절의 전체 transform을 담았다. RealityKit에 구체를 그릴 때는 회전과 위치가 모두 필요하지만, 손 모양을 비교할 때는 먼저 관절 위치가 필요하다.
+            첫 번째 대상은 양손 핀치 수인이다. 왼손과 오른손 모두 엄지 끝과 검지 끝이 가까우면 통과한다.
 
-            `simd_float4x4`의 네 번째 column에는 translation이 들어 있다. `columns.3`에서 `x`, `y`, `z`만 꺼내면 월드 공간 기준 `SIMD3<Float>` 위치가 된다.
+            각 손에서 `wrist`, `thumbTip`, `indexFingerTip`, `middleFingerKnuckle`은 필수 관절이다. 손목은 기준점이고, 가운데손가락 너클은 손 크기 기준이 되며, 두 손끝은 핀치 거리를 계산한다. 엄지·검지 너클과 팔목은 방향을 해석할 때 쓸 보조 관절이다.
+
+            이 장의 코드 카드는 모두 `PoseFeatures` package target의 실제 파일이다. 설정, feature 생성, 평가를 서로 다른 파일로 나누어, 각 단계에서 추가한 코드가 곧 빌드 대상이 되게 한다.
         }
 
         @Steps {
             @Step {
-                `HandJointPositionSample`을 만들고, `HandJointSample.originFromJointTransform`에서 위치 값을 추출한다.
+                ARKit와 분리된 `PoseFeatures` 패키지에서 사용할 관절 이름, 입력, feature 완성 상태를 정의한다.
 
-                @Code(name: "HandJointPositionSample.swift", file: "05-01-HandJointPositionSample.swift")
+                @Code(name: "PoseFeatureModels.swift", file: "05-01-PoseFeatureModels.swift")
+            }
+
+            @Step {
+                양손 핀치에 필요한 필수 관절과 보조 관절, 조정 가능한 정규화 거리 임계값을 선언한다.
+
+                @Code(name: "BilateralPinchPose.swift", file: "05-02-BilateralPinchPose.swift")
             }
         }
     }
 
-    @Section(title: "한 손의 feature 모델 만들기") {
+    @Section(title: "완성 상태와 관절 확보율 만들기") {
         @ContentAndMedia {
-            제스처 판정은 관절 하나가 아니라 한 손의 여러 관절 위치를 함께 본다.
+            필수 관절이 모두 있으면 핀치 feature를 계산할 수 있다. 보조 관절까지 모두 있으면 `complete`, 보조 관절 일부가 없으면 `partial`, 필수 관절이 없으면 `unavailable`이다.
 
-            `HandPoseFeature`는 손 방향, 기준 관절, 상대 좌표로 바꾼 관절 위치, 누락된 관절 목록을 한곳에 담는다. 이 구조를 만들면 다음 장에서 제스처 판정 함수가 ARKit transform 대신 순수한 위치 데이터를 입력으로 받을 수 있다.
+            `jointCoverageRatio`는 대상 수인에 정의한 전체 관절 가운데 실제로 확보한 비율이다. `availableFeatures`와 `missingFeatures`를 함께 남기면, 실기기에서 결과가 왜 제한되었는지 확인할 수 있다.
         }
 
         @Steps {
             @Step {
-                한 손의 pose feature와 디버그용 거리 값을 표현하는 타입을 추가한다.
+                손목을 원점으로 바꾸고, 엄지 끝과 검지 끝 사이 거리를 손목과 가운데손가락 너클 거리로 나눈다. 이 비율은 손이 커지거나 작아져도 비교할 수 있다.
 
-                @Code(name: "HandPoseFeature.swift", file: "05-02-HandPoseFeature.swift")
+                @Code(name: "BilateralPinchPose+Feature.swift", file: "05-03-BilateralPinchPose-Feature.swift")
             }
         }
     }
 
-    @Section(title: "필수 관절과 기준점 정하기") {
+    @Section(title: "한 시점의 양손 핀치 평가하기") {
         @ContentAndMedia {
-            4장에서는 팔뚝 관절까지 포함해 시각화했다. 하지만 손 모양 판정의 시작점으로는 손목과 손가락 관절 25개를 먼저 사용한다.
+            좌우 입력에는 각각 왼손 feature와 오른손 feature가 와야 한다. 두 feature의 손 방향과 정규화된 핀치 거리를 확인한 뒤, 두 값이 모두 임계값 이하면 `matched`, 하나라도 크면 `notMatched`다. `threshold`는 기본값을 쓰거나 실기기 측정값에 맞춰 호출 시 조정할 수 있다.
 
-            월드 좌표를 그대로 비교하면 손이 공간 어디에 있느냐에 따라 값이 달라진다. 그래서 `wrist`를 기준 관절로 정하고, 각 관절 위치에서 손목 위치를 빼 상대 좌표를 만든다.
+            필수 관절이 빠져 거리 자체를 만들 수 없으면 `notEvaluable`이다. 이 결과는 한 프레임의 측정값만 설명한다. 여러 프레임을 유지하는 `GestureClassifier`나 히스테리시스는 여기서 추가하지 않는다.
         }
 
         @Steps {
             @Step {
-                `HandPoseFeatureBuilder`에서 손 모양 판정에 사용할 필수 관절 목록을 정한다.
+                양손의 정규화 핀치 거리를 비교해 정적 평가 결과를 만든다.
 
-                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-03-HandPoseFeatureBuilder.swift")
-            }
-
-            @Step {
-                관절 월드 위치를 모은 뒤, 각 관절 위치에서 손목 위치를 빼 상대 좌표로 변환한다.
-
-                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-07-HandPoseFeatureBuilder-Relative.swift")
+                @Code(name: "BilateralPinchPose+Evaluation.swift", file: "05-04-BilateralPinchPose-Evaluation.swift")
             }
         }
     }
 
-    @Section(title: "snapshot에서 feature 만들기") {
+    @Section(title: "Hand Tracking 입력과 검증 기록 연결하기") {
         @ContentAndMedia {
-            4장의 `HandTrackingSnapshot`은 이미 왼손과 오른손의 관절 샘플을 나누어 담고 있다.
+            앱 경계에서는 `HandTrackingSnapshot`의 ARKit 관절 이름과 월드 transform을 `TrackedJointPosition` 배열로 바꾼다. 순수 Swift package의 어댑터는 이 배열을 `PoseFeatures` 입력으로 바꿔, ARKit 의존성을 feature 계산에서 분리한다.
 
-            여기에 왼손과 오른손 feature를 꺼내는 computed property를 추가하면, 화면이나 다음 장의 판정 로직은 snapshot에서 바로 위치 feature를 가져올 수 있다.
+            실기기 검증 기록에는 feature 상태와 수치가 함께 필요하다. schema version 1은 캡처 시각, 대상 수인, 평가 결과, 관절 확보율, 사용 가능·누락 feature, 양손 핀치 거리를 기록한다. `PoseFeatureVerificationRecord.decode(from:)`는 지원하지 않는 schema version을 거부하므로, 호환 또는 마이그레이션 정책을 문서화할 수 있다.
         }
 
         @Steps {
             @Step {
-                `HandTrackingSnapshot`에 좌우 손 pose feature를 만드는 연결 지점을 추가한다.
+                Hand Tracking snapshot을 순수 Swift 입력으로 변환하는 어댑터를 추가한다.
 
-                @Code(name: "HandTrackingSnapshot.swift", file: "05-04-HandTrackingSnapshot.swift")
+                @Code(name: "HandTrackingPoseFeatureAdapter.swift", file: "05-05-HandTrackingPoseFeatureAdapter.swift")
+            }
+
+            @Step {
+                양손 feature와 정적 평가 결과를 JSON 기록으로 인코딩하고, 지원하는 schema version인지 확인하며 디코딩한다.
+
+                @Code(name: "PoseFeatureVerificationRecord.swift", file: "05-06-PoseFeatureVerificationRecord.swift")
             }
         }
     }
 
-    @Section(title: "Window에서 feature 확인하기") {
+    @Section(title: "합성 관절 입력으로 검증하기") {
         @ContentAndMedia {
-            Simulator에서는 실제 손 입력이 들어오지 않는다. 그래도 코드 구조와 문서 빌드는 확인할 수 있고, Apple Vision Pro에서는 현재 feature 개수와 주요 거리 값이 손 움직임에 따라 변하는지 볼 수 있다.
+            실제 손 입력은 Apple Vision Pro가 있어야 받을 수 있다. 반면 feature 계산은 순수 Swift이므로 손 크기, 누락 관절, 다른 손모양을 합성 좌표로 재현해 빠르게 검증할 수 있다.
 
-            이번 장에서는 엄지 끝과 검지 끝 사이 거리를 대표 디버그 값으로 보여준다. 이 값은 다음 장에서 핀치나 손가락 간 거리 기반 판정으로 이어질 수 있다.
+            테스트에서는 손 크기가 달라도 양손 핀치가 `matched`인지, 다른 손모양이 `notMatched`인지, 필수 관절 누락이 `notEvaluable`인지 확인한다. 보조 관절만 빠진 경우에는 `partial`이지만 핀치 거리 계산은 계속 가능해야 한다. 양손 입력의 방향이 바뀌거나 지원하지 않는 schema version이 들어온 경우도 `notEvaluable` 또는 오류로 남는지 확인한다.
         }
 
         @Steps {
             @Step {
-                `ContentView`에서 좌우 손 feature 개수, 누락 관절 수, 엄지와 검지 끝 사이 거리를 표시한다.
+                양손 핀치와 필수 관절 누락을 합성 입력으로 검증한다.
 
-                @Code(name: "ContentView.swift", file: "05-05-ContentView.swift")
+                @Code(name: "BilateralPinchPoseTests.swift", file: "05-07-BilateralPinchPoseTests.swift")
             }
         }
     }
 
-    @Section(title: "확인하고 다음 장으로 이어가기") {
+    @Section(title: "실기기에서 feature 상태 확인하기") {
         @ContentAndMedia {
-            5장을 마치면 관절 transform은 시각화용 행렬에서 판정용 위치 feature로 바뀐다.
+            Simulator에서는 합성 입력 테스트와 DocC 빌드를 확인한다. Apple Vision Pro에서는 양손 핀치를 만들고, 좌우 손의 `complete` 또는 `partial` 상태, 관절 확보율, 정규화된 핀치 거리, 평가 결과가 기대와 맞는지 확인한다.
 
-            feature가 완성되려면 필수 관절이 모두 있어야 한다. 누락된 관절을 `(0, 0, 0)`으로 채우면 손목과 손끝 거리, 손가락 굽힘 정도, 손 크기 정규화 값이 모두 왜곡될 수 있으므로 이번 장에서는 누락 목록을 명시하고 feature 완성 여부를 구분한다.
-
-            6장에서는 이 입력 구조를 사용해 실제 손 모양을 판정한다.
+            손가락 일부를 가렸을 때 필수 관절 누락은 `notEvaluable`, 보조 관절만 누락된 경우는 `partial`로 표시되는지 관찰한다. 실제 기기에서 얻은 값은 임계값을 조정하는 근거일 뿐, 모든 환경에 적용되는 고정값은 아니다.
         }
 
         @Steps {
             @Step {
-                실기기에서 feature 완성 여부와 주요 거리 값이 실제 손 움직임과 맞게 변하는지 확인한다.
-
-                @Code(name: "HandPoseFeatureBuilder.swift", file: "05-06-HandPoseFeatureBuilder-Verification.swift")
+                양손 핀치, 다른 손모양, 필수 관절 가림, 보조 관절 가림을 차례로 시도해 feature 상태와 평가 결과를 기록한다.
             }
         }
     }
