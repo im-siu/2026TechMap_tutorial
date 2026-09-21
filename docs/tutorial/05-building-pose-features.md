@@ -1,6 +1,6 @@
 # 05. Pose Features로 이어가기
 
-이전: [4장 관절을 공간에 그리기](./04-joint-visualization.md)
+이전: [4장 관절을 공간에 그리기](./04-joint-visualization.md) · 다음: [6장 손깍지 두 손가락 수인 정의하기](./06-defining-interlocked-two-finger-seal.md)
 
 ## 이 장의 목표
 
@@ -71,15 +71,16 @@ Pose Features 쪽에서는 `originFromJointTransform.columns.3`에서 위치 값
 - 술, 인, 축 포즈별 특징값 범위와 판정 임계값
 - smoothing, 히스테리시스, 자세 유지 시간의 필요성
 
-## 다음 구현으로 이어갈 작업
+## 6장으로 이어가기
 
-다음 단계에서는 이 흐름을 앱 안에서 연결한다.
+6장에서는 이 위치 feature를 사용해 손깍지를 낀 양손에서 검지와 중지만 세운 수인을 정의한다. 이 수인은 양손이 서로 가려지는 동작이므로, 모든 관절을 필수로 요구하지 않고 수인의 정체성을 가장 잘 보여 주는 관절을 먼저 고른다.
 
-그때는 다음을 다룬다.
+다음 장에서는 다음을 다룬다.
 
-- `HandTrackingSnapshot`을 Pose Features 입력 타입으로 변환하는 어댑터 위치
-- 포즈별로 필요한 관절을 어떻게 정의할지
-- UI에서 특징값과 누락 관절을 어떻게 표시할지
+- 양손 검지와 중지가 펴졌는지 나타내는 거리·방향·굽힘 특징
+- 양손이 손깍지 상태인지 나타내는 상대 위치 특징
+- 가려질 수 있는 약지·소지와 엄지를 필수값이 아닌 보조 근거로 다루는 방법
+- `notEvaluable`, `notMatched`, `candidate`로 현재 입력을 설명하는 방법
 
 ## 이 장의 완료 기준
 
@@ -87,4 +88,4 @@ Pose Features 쪽에서는 `originFromJointTransform.columns.3`에서 위치 값
 - 누락 관절을 임의 좌표로 채우지 않는 이유를 설명할 수 있다.
 - Apple Vision Pro에서 조정할 값을 설명할 수 있다.
 
-이전: [4장 관절을 공간에 그리기](./04-joint-visualization.md)
+이전: [4장 관절을 공간에 그리기](./04-joint-visualization.md) · 다음: [6장 손깍지 두 손가락 수인 정의하기](./06-defining-interlocked-two-finger-seal.md)

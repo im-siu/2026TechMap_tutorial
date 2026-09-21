@@ -1,6 +1,6 @@
 # Hand Jutsu 튜토리얼 Markdown 안내
 
-이 폴더는 DocC 튜토리얼과 같은 1~5장 학습 순서를 Markdown으로 안내한다. 각 장에는 학습자가 수행할 행동과 기기별 확인 범위를 적는다.
+이 폴더는 DocC 튜토리얼과 같은 1~8장 학습 순서를 Markdown으로 안내한다. 1~5장은 현재 본편의 기초 흐름이고, 6~8장은 손깍지 수인을 인식해 간단한 공간 효과로 연결하는 확장 흐름이다. 각 장에는 학습자가 수행할 행동과 기기별 확인 범위를 적는다.
 
 ## 튜토리얼 목표
 
@@ -14,7 +14,9 @@ Immersive Space 열기
 → 양손 HandAnchor 수집
 → 관절의 월드 좌표 계산
 → Pose Features 입력으로 변환
-→ 손 모양 판정 재료 이해
+→ 손깍지 두 손가락 수인 정의
+→ 시간 기반 수인 인식과 상태 전환
+→ 공간 효과 발동
 ```
 
 ## 대상 독자
@@ -33,15 +35,19 @@ Immersive Space 열기
 | 3 | 양손 추적 시작 | 권한과 `ARKitSession` 생명주기 이해 | Simulator UI, Apple Vision Pro 손 입력 |
 | 4 | 관절을 공간에 그리기 | Hand Anchor와 Joint transform으로 관절 위치 표시 | Apple Vision Pro |
 | 5 | Pose Features로 이어가기 | 관절 월드 좌표를 손 모양 판정 재료로 변환 | 순수 Swift 테스트, Apple Vision Pro 비교 |
+| 6 | 손깍지 두 손가락 수인 정의하기 | 양손 검지·중지 세움과 손깍지 관계를 feature로 표현 | 순수 Swift 테스트, Apple Vision Pro 비교 |
+| 7 | 안정적으로 수인 인식하기 | 유지 시간·가림 유예·상태 전환으로 오인식 줄이기 | 순수 Swift 테스트, Apple Vision Pro 비교 |
+| 8 | 수인에 반응하는 공간 효과 만들기 | 빛 구체를 기준 효과로 만들고 불·물 스타일로 확장 | Apple Vision Pro |
 
-## 후속 확장으로 분리할 내용
+## 8장 이후의 확장
 
-이번 1차 튜토리얼에서는 아래 내용은 본편 완료 조건으로 다루지 않는다.
+8장까지는 하나의 정적인 손깍지 수인과 하나의 간단한 효과에 집중한다. 아래 내용은 이후 장으로 분리한다.
 
-- 오인식 줄이기: smoothing, 히스테리시스, 자세 유지 시간
-- 술법 상태 머신: 준비, 충전, 발동, 쿨다운
-- 완성된 공간 효과: 에너지 구체, 방어막, 번개 등
-- DocC와 GitHub Pages 배포 자동화
+- 여러 수인의 우선순위와 복합 수인
+- 동적인 손동작 순서 인식
+- 완성형 발사체, 방어막, 번개 같은 복잡한 효과
+- 사용자별 임계값 자동 보정
+- Apple Vision Pro 실기기 측정값을 이용한 임계값 조정
 
 ## 문서 목록
 
@@ -50,6 +56,9 @@ Immersive Space 열기
 - [03. 양손 Hand Tracking 시작하기](./03-starting-hand-tracking.md)
 - [04. 관절을 공간에 그리기](./04-joint-visualization.md)
 - [05. Pose Features로 이어가기](./05-building-pose-features.md)
+- [06. 손깍지 두 손가락 수인 정의하기](./06-defining-interlocked-two-finger-seal.md)
+- [07. 안정적으로 수인 인식하기](./07-recognizing-the-seal-reliably.md)
+- [08. 수인에 반응하는 공간 효과 만들기](./08-triggering-spatial-spell-effects.md)
 
 ## 기기별 확인 원칙
 
