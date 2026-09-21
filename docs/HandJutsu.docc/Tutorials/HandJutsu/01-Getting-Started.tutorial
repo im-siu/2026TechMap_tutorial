@@ -7,18 +7,36 @@
 
     @Section(title: "새 visionOS 프로젝트 만들기") {
         @ContentAndMedia {
-            이 튜토리얼은 처음부터 visionOS App으로 만든 빈 프로젝트를 기준으로 진행한다. Xcode가 기본 Window와 SwiftUI 진입점을 만들어 주므로, 다음 장에서 Immersive Space를 추가하기 좋은 출발점이 된다.
+            이 튜토리얼은 처음부터 visionOS App으로 만든 프로젝트를 기준으로 진행한다. 기본 Window에서 시작하고, RealityKit 기반 Full Immersive Space를 함께 준비한다.
 
-            @Image(source: hand-jutsu-overview.svg, alt: "Hand Jutsu가 기본 Window에서 Immersive Space와 손 추적으로 이어지는 흐름을 보여 주는 이미지")
+            Xcode는 `ImmersiveSpace`와 `ImmersiveView`의 기본 뼈대를 함께 만든다. 2장에서는 이 기본 뼈대를 사용해 Window에서 Space를 여닫는 흐름으로 정리한다.
         }
 
         @Steps {
             @Step {
-                Xcode에서 **File > New > Project**를 선택한다. **visionOS > App** 템플릿을 고른 뒤 다음으로 진행한다.
+                Xcode 시작 화면에서 **New Project**를 선택한다. Xcode가 이미 열려 있다면 **File > New > Project**를 선택한다.
+
+                @Image(source: 01-01-new-project.png, alt: "Xcode 시작 화면에서 New Project 메뉴가 강조된 모습")
             }
 
             @Step {
-                Product Name에 `HandJutsu`를 입력한다. Interface는 SwiftUI, Language는 Swift, Initial Scene은 Window로 둔다. Organization Identifier에는 자신의 역방향 도메인 이름을 입력한다.
+                New Project 메뉴에서 **Choose Template**을 선택한다.
+
+                @Image(source: 01-02-choose-template.png, alt: "Xcode New Project 메뉴에서 Choose Template 항목이 강조된 모습")
+            }
+
+            @Step {
+                템플릿 선택 화면에서 **visionOS** 탭을 고르고 **App**을 선택한 뒤 다음으로 진행한다.
+
+                @Image(source: 01-03-visionos-app-template.png, alt: "Xcode 템플릿 선택 화면에서 visionOS 탭과 App 템플릿이 선택된 모습")
+            }
+
+            @Step {
+                Product Name은 `HandJutsu`, Organization Identifier는 자신의 역방향 도메인 이름으로 입력한다. Apple Vision Pro에 설치할 계획이라면 Team에는 자신의 개발 Team을 선택한다.
+
+                Initial Scene은 Window, Immersive Space Renderer는 RealityKit, Immersive Space는 Full, Testing System은 None으로 둔다. 이 설정이 2장과 3장에서 사용할 기본 Window와 Full Immersive Space를 만든다.
+
+                @Image(source: 01-04-project-options.png, alt: "HandJutsu 프로젝트 옵션에서 Window, RealityKit, Full Immersive Space, None Testing System이 선택된 모습")
             }
         }
     }
